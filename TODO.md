@@ -1,18 +1,9 @@
-# TODO - Khmer i18n coverage
+# TODO - Country filter removal (Products page)
 
-## Step 1: Extend i18n dictionaries
-- Add missing Khmer + English keys for all hardcoded UI strings found in:
-  - Home.vue, Products.vue, Wishlist.vue, Cart.vue, Checkout.vue
-  - Login.vue, Register.vue, Orders.vue, Profile.vue
-  - Footer.vue, SearchBar.vue
-  - ProductCard.vue, ProductDetail.vue
-
-## Step 2: Update components/views to use `t(key)`
-- Replace all hardcoded English UI text with `{{ t('...') }}`.
-- Replace aria-label / alt text where applicable with `t()`.
-- Keep data-driven values (product names, categories, flags) unchanged.
-
-## Step 3: Build & verify
-- Run `npm run build`.
-- Manually verify: switch language to Khmer; ensure entire UI updates (not just navbar).
+- [ ] Inspect `src/views/Products.vue` for country filter UI + state/query/computed logic.
+- [ ] Remove `activeCountry`, `countries`, `pickCountry`, route.query.country hydration, and computed filtering for country.
+- [ ] Remove Country filter UI (top select + sidebar Countries block).
+- [ ] Ensure layout spacing remains clean (no empty gaps / broken grid).
+- [ ] Confirm other filters still work: category, price, rating, search, sorting, shipping.
+- [ ] Quick build check (run frontend tests/build if available).
 

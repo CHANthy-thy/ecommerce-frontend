@@ -2,15 +2,20 @@
 import { reactive, ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCartStore } from '@/stores/cart'
+import { useAuthStore } from '@/stores/auth'
+import { useOrdersStore, type OrderStatus } from '@/stores/orders'
 
 const cart = useCartStore()
 const router = useRouter()
+const auth = useAuthStore()
+const ordersStore = useOrdersStore()
 
 const form = reactive({ name: '', phone: '', address: '', city: '', zip: '', payment: 'card' })
 const errors = reactive<Record<string, string>>({})
 const placing = ref(false)
 const placed = ref(false)
 const orderId = ref('')
+
 
 const shipping = computed(() => (cart.subtotal >= 75 ? 0 : 9.99))
 const total = computed(() => cart.subtotal + shipping.value)
@@ -28,14 +33,35 @@ function validate() {
 function placeOrder() {
   if (cart.count === 0) return
   if (!validate()) return
+
   placing.value = true
   setTimeout(() => {
     orderId.value = 'SM-' + Math.floor(100000 + Math.random() * 900000).toString()
+
+    const status: OrderStatus = 'Processing'
+    const ownerKey = auth.user?.email ?? 'guest@local'
+
+    ordersStore.addOrder({
+        id: orderId.value,
+        date: new Date().toISOString(),
+        status,
+        total: total.value,
+        items: cart.items.map((it) => ({
+          name: it.name,
+          qty: it.quantity,
+          price: it.price,
+          image: it.image,
+        })),
+        ownerKey,
+      })
+
+
     placed.value = true
     cart.clear()
     placing.value = false
   }, 700)
 }
+
 
 function goOrders() {
   router.push('/orders')

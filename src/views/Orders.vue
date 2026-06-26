@@ -1,58 +1,24 @@
 ﻿<script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import { useOrdersStore, type OrderStatus } from '@/stores/orders'
 
-interface Order {
-  id: string
-  date: string
-  status: 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled'
-  total: number
-  items: { name: string; qty: number; price: number; image: string }[]
-}
+const auth = useAuthStore()
+const ordersStore = useOrdersStore()
 
-const orders = ref<Order[]>([
-  {
-    id: 'SM-482103',
-    date: '2026-01-12',
-    status: 'Delivered',
-    total: 587.0,
-    items: [
-      { name: 'Modern Lounge Chair', qty: 1, price: 549, image: 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=400&q=80&auto=format&fit=crop' },
-      { name: 'Ceramic Pour-Over Set', qty: 1, price: 38, image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&q=80&auto=format&fit=crop' },
-    ],
-  },
-  {
-    id: 'SM-482078',
-    date: '2026-01-08',
-    status: 'Shipped',
-    total: 249.0,
-    items: [{ name: 'Wireless Noise-Cancel Headphones', qty: 1, price: 249, image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80&auto=format&fit=crop' }],
-  },
-  {
-    id: 'SM-481950',
-    date: '2025-12-30',
-    status: 'Processing',
-    total: 318.0,
-    items: [
-      { name: 'Smart Fitness Watch', qty: 1, price: 179, image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80&auto=format&fit=crop' },
-      { name: 'Wireless Charging Pad', qty: 1, price: 39, image: 'https://images.unsplash.com/photo-1586816879360-004f5b0c51e5?w=400&q=80&auto=format&fit=crop' },
-      { name: 'Mechanical Keyboard RGB', qty: 1, price: 100, image: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=400&q=80&auto=format&fit=crop' },
-    ],
-  },
-  {
-    id: 'SM-481866',
-    date: '2025-12-21',
-    status: 'Cancelled',
-    total: 89.0,
-    items: [{ name: 'Linen Oversized Shirt', qty: 1, price: 89, image: 'https://images.unsplash.com/photo-1485518882345-15568b007407?w=400&q=80&auto=format&fit=crop' }],
-  },
-])
-
-const filter = ref<'All' | Order['status']>('All')
+const filter = ref<'All' | OrderStatus>('All')
 const open = ref<string | null>(null)
 
-const list = computed(() =>
-  filter.value === 'All' ? orders.value : orders.value.filter((o) => o.status === filter.value),
-)
+const myOrders = computed(() => {
+  const ownerKey = auth.user?.email ?? 'guest@local'
+  return ordersStore.listByOwnerKey(ownerKey)
+})
+
+
+const list = computed(() => {
+  if (filter.value === 'All') return myOrders.value
+  return myOrders.value.filter((o) => o.status === filter.value)
+})
 
 function toggle(id: string) {
   open.value = open.value === id ? null : id
@@ -62,6 +28,7 @@ function fmt(date: string) {
   return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
 }
 </script>
+
 
 <template>
   <div class="page container">

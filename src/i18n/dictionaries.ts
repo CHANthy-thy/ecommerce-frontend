@@ -2,6 +2,20 @@ export type Lang = 'kh' | 'en'
 
 export const dictionaries: Record<Lang, Record<string, string>> = {
   kh: {
+    'home.hero.kicker': 'ចំណូលចិត្តថ្មី',
+    'home.hero.title.line1': 'ស្វែងរកបច្ចេកវិទ្យា',
+    'home.hero.title.line2': 'ដែលទំនើបបំផុត',
+    'home.hero.title.line3': 'សម្រាប់អ្នក',
+
+    'home.cta.shopNew': 'ទិញរបស់ថ្មី',
+    'home.cta.gamingDeals': 'ប្រូម៉ូសិនហ្គេម',
+
+    'home.hero.pills.shipping': 'ដឹកជញ្ជូនឥតគិតថ្លៃលើការបញ្ជាទិញលើ $199',
+    'home.hero.pills.returns': 'សងប្រាក់វិញក្នុងរយៈពេល 30 ថ្ងៃ',
+    'home.hero.pills.warranty': 'ធានាផ្លូវការរបស់រោងចក្រ',
+
+    'home.hero.desc': 'យើងផ្តល់ជូននូវផលិតផលដែលមានគុណភាពខ្ពស់ និងការធានាផ្លូវការ។',
+
     'nav.home': 'ទំព័រដើម',
     'nav.products': 'ផលិតផល',
     'nav.wishlist': 'បញ្ជីប្រាថ្នា',
@@ -28,7 +42,6 @@ export const dictionaries: Record<Lang, Record<string, string>> = {
     'pages.profile.title': 'ប្រវត្តិរូប',
     'pages.productNotFound': 'រកមិនឃើញផលិតផល',
 
-    // Common actions
     'actions.backToShop': 'ត្រឡប់ទៅហាង',
     'actions.continueShopping': 'បន្តទិញ',
     'actions.browseProducts': 'ស្វែងរកផលិតផល',
@@ -38,29 +51,6 @@ export const dictionaries: Record<Lang, Record<string, string>> = {
     'actions.placeOrder': 'ដាក់ការបញ្ជាទិញ',
     'actions.viewOrders': 'មើលការបញ្ជាទិញ',
 
-    // Home
-    'home.kicker.featured': 'ដែលពេញនិយម',
-    'home.section.featured': "ជម្រើសអ្នកណែនាំ",
-    'home.banner.kicker': 'ពេលវេលាកំណត់',
-    'home.banner.title': 'បញ្ចុះរហូតដល់ 30% លើផលិតផលដែលបានជ្រើស',
-    'home.banner.desc': 'Apple, Samsung, Sony, Razer — សន្សំធំបំផុតនៃរដូវកាលនេះ',
-    'home.banner.cta': 'ទិញក្នុងតម្លៃបញ្ចុះ',
-    'home.best.kicker': 'ចំណូលចិត្តពីអតិថិជន',
-    'home.best.title': 'លក់ដាច់បំផុត',
-    'home.new.kicker': 'ថ្មីៗ',
-    'home.new.title': 'មកថ្មី',
-    'home.trending.kicker': 'កំពុងពេញនិយម',
-    'home.trending.japan': 'ផលិតផលល្អៗពីប្រទេសជប៉ុន',
-    'home.trending.usa': 'ផលិតផលល្អៗពីប្រទេសសហរដ្ឋអាមេរិក',
-
-    'home.cta.shopNew': 'ទិញរបស់ថ្មី',
-    'home.cta.gamingDeals': 'ប្រូម៉ូសិនហ្គេម',
-
-    'home.hero.pills.shipping': 'ដឹកជញ្ជូនឥតគិតថ្លៃលើការបញ្ជាទិញលើ $199',
-    'home.hero.pills.returns': 'សងប្រាក់វិញក្នុងរយៈពេល 30 ថ្ងៃ',
-    'home.hero.pills.warranty': 'ធានាផ្លូវការរបស់រោងចក្រ',
-
-    // Products page
     'products.head.title': 'ទិញគ្រប់យ៉ាង',
     'products.head.subtitle': 'ផលិតផល {{count}} មុខ · អ្វីថ្មីចុងក្រោយក្នុងបច្ចេកវិទ្យា និងអេឡិចត្រូនិក',
 
@@ -89,7 +79,6 @@ export const dictionaries: Record<Lang, Record<string, string>> = {
     'products.empty.title': 'រកមិនឃើញផលិតផល',
     'products.empty.desc': 'សាកល្បងស្វែងរក ឬជ្រើសប្រភេទផ្សេង',
 
-    // Cart
     'cart.head.title': 'កន្ត្រកទិញរបស់អ្នក',
     'cart.head.subtitle': '{{count}} មុខទំនិញនៅក្នុងកន្ត្រក',
     'cart.empty.title': 'កន្ត្រកទិញរបស់អ្នកទទេ',
@@ -98,7 +87,6 @@ export const dictionaries: Record<Lang, Record<string, string>> = {
     'cart.summary.title': 'សេចក្តីសង្ខេបការបញ្ជាទិញ',
     'cart.qty.inStockShips': 'មានក្នុងស្តុក · ដឹកជញ្ជូនក្នុង 1–2 ថ្ងៃ',
 
-    // Wishlist
     'wishlist.head.title': 'បញ្ជីប្រាថ្នារបស់អ្នក',
     'wishlist.head.subtitle': '{{count}} បានរក្សាទុក',
     'wishlist.empty.title': 'មិនទាន់មានអ្វីដែលបានរក្សាទុកទេ',
@@ -106,7 +94,6 @@ export const dictionaries: Record<Lang, Record<string, string>> = {
     'wishlist.empty.cta': 'ស្វែងរកផលិតផល',
     'wishlist.addToCart': 'ដាក់ចូលកន្ត្រកទិញ',
 
-    // Checkout
     'checkout.success.title': 'ការបញ្ជាទិញបានដាក់ជោគជ័យ!',
     'checkout.success.desc': 'ការបញ្ជាទិញ <strong>#{{id}}</strong> របស់អ្នកត្រូវបានដាក់ដោយជោគជ័យ',
     'checkout.success.viewOrders': 'មើលការបញ្ជាទិញរបស់ខ្ញុំ',
@@ -118,9 +105,6 @@ export const dictionaries: Record<Lang, Record<string, string>> = {
 
     'checkout.head.title': 'ទូទាត់',
     'checkout.head.subtitle': 'ជិតរួចហើយ។ ពិនិត្យព័ត៌មានរបស់អ្នក ហើយដាក់ការបញ្ជាទិញ។',
-
-    'checkout.form.shipping': 'ព័ត៌មានដឹកជញ្ជូន',
-    'checkout.form.payment': 'វិធីទូទាត់',
 
     'checkout.field.fullName': 'ឈ្មោះពេញ',
     'checkout.field.phone': 'លេខទូរស័ព្ទ',
@@ -142,7 +126,6 @@ export const dictionaries: Record<Lang, Record<string, string>> = {
     'checkout.summary.placeOrder': 'ដាក់ការបញ្ជាទិញ',
     'checkout.note': 'ដោយដាក់ការបញ្ជាទិញ អ្នកយល់ព្រមតាម លក្ខខណ្ឌ និងគោលការណ៍ឯកជនភាពរបស់យើង។',
 
-    // Orders
     'orders.head.title': 'ការបញ្ជាទិញរបស់ខ្ញុំ',
     'orders.head.subtitle': 'តាមដាន មើល និងគ្រប់គ្រងការទិញរបស់អ្នក។',
     'orders.empty.title': 'មិនមានការបញ្ជាទិញទេ',
@@ -158,7 +141,6 @@ export const dictionaries: Record<Lang, Record<string, string>> = {
     'orders.status.Cancelled': 'បានលុប',
     'orders.item.qty': 'បរិមាណ',
 
-    // Profile
     'profile.personal': 'ព័ត៌មានផ្ទាល់ខ្លួន',
     'profile.password': 'ផ្លាស់ប្តូរលេខសម្ងាត់',
     'profile.preferences': 'ចំណូលចិត្ត',
@@ -178,7 +160,7 @@ export const dictionaries: Record<Lang, Record<string, string>> = {
     'profile.action.saved': 'បានរក្សាទុក',
 
     'profile.card.password.title': 'ផ្លាស់ប្តូរលេខសម្ងាត់',
-    'profile.card.password.desc': "ជ្រើសរើសលេខសម្ងាត់ដែលរឹងមាំ ដែលអ្នកមិនប្រើនៅកន្លែងផ្សេង។",
+    'profile.card.password.desc': 'ជ្រើសរើសលេខសម្ងាត់ដែលរឹងមាំ ដែលអ្នកមិនប្រើនៅកន្លែងផ្សេង។',
 
     'profile.card.preferences.title': 'ចំណូលចិត្ត',
     'profile.card.preferences.desc': 'កំណត់របៀបដែល ShopMart ទាក់ទងជាមួយអ្នក។',
@@ -190,7 +172,6 @@ export const dictionaries: Record<Lang, Record<string, string>> = {
 
     'profile.theme.title': 'រូបរាង',
 
-    // Auth
     'auth.login.welcome': 'សូមស្វាគមន៍មកវិញ',
     'auth.login.subtitle': 'ចូលដើម្បីបន្តការទិញរបស់អ្នក។',
     'auth.login.email': 'អ៊ីមែល',
@@ -209,16 +190,19 @@ export const dictionaries: Record<Lang, Record<string, string>> = {
     'auth.register.submit': 'បង្កើតគណនី',
     'auth.register.signIn': 'ចូល',
 
-    // Product detail
     'product.notFound.title': 'រកមិនឃើញផលិតផល',
     'product.notFound.backToShop': 'ត្រឡប់ទៅហាង',
     'product.tabs.description': 'ការពិពណ៌នា',
     'product.tabs.specs': 'លក្ខណៈពិសេស',
     'product.tabs.reviews': 'ការវាយតម្លៃ',
   } as const,
+
   en: {
+    'home.hero.title.line1': 'Your Style, Your Choice.',
+    'home.hero.title.line2': 'Shop Smarter, Live Better.',
     'nav.home': 'Home',
     'nav.products': 'Products',
+
     'nav.wishlist': 'Wishlist',
     'nav.cart': 'Cart',
     'nav.orders': 'Orders',

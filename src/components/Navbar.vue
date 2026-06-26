@@ -52,7 +52,7 @@ function logout() {
     <div class="container nav-inner">
       <RouterLink to="/" class="brand" @click="close">
         <span class="brand-mark">SM</span>
-        <span class="brand-name">ShopMart</span>
+        <span class="brand-name">Shop_ZhenZ</span>
       </RouterLink>
 
       <nav class="nav-center" :class="{ open: open }">

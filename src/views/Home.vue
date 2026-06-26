@@ -34,7 +34,7 @@ const topUsaProducts = computed(() =>
     <section class="hero">
       <div class="container hero-grid">
         <div class="hero-copy">
-<span class="kicker">{{ t('home.hero.kicker') }}</span>
+        <span class="kicker">{{ t('home.hero.kicker') }}</span>
           <h1>
             {{ t('home.hero.title.line1') }}<br />
             <span class="grad">{{ t('home.hero.title.line2') }}</span><br />
@@ -100,7 +100,13 @@ const topUsaProducts = computed(() =>
       <div class="section-head">
         <div>
           <span class="kicker">Featured</span>
-          <h2>Editor's picks</h2>
+              <h2>Editor's picks</h2>
+              <RouterLink to="/products" class="link">View all...</RouterLink>
+              <span class="kicker">{{ t('home.kicker.featured') }}</span>
+              <h2>{{ t('home.section.featured') }}</h2>
+              <RouterLink to="/products" class="link">{{ t('actions.browseProducts') }} 
+              <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span>
+        </RouterLink>
         </div>
         <RouterLink to="/products" class="link">View all <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span></RouterLink>
       </div>

@@ -1,7 +1,8 @@
 ﻿<script setup lang="ts">
 import { computed, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { products, categories } from '@/data/products'
+import { products } from '@/data/products'
+
 import ProductCard from '@/components/ProductCard.vue'
 
 const route = useRoute()
@@ -9,13 +10,8 @@ const router = useRouter()
 
 const search = ref('')
 
-// legacy filters
-const activeCat = ref('All')
-const activeBrand = ref<string>('All')
-
-// new sidebar filters
+// Sidebar filters (single source of truth)
 const activeICat = ref<'All' | 'Electronics' | 'Fashion' | 'Food' | 'Books' | 'Beauty'>('All')
-const activeCountry = ref<'All' | 'Cambodia' | 'Japan' | 'Korea' | 'China' | 'Italy' | 'USA'>('All')
 
 type ShippingType = 'Local' | 'International'
 
@@ -32,66 +28,65 @@ const activeShipping = ref<ShippingType | 'All'>('All')
 
 
 const brands = ['All', 'Apple', 'Samsung', 'Xiaomi', 'ASUS', 'Lenovo', 'Dell', 'Sony', 'JBL', 'Logitech', 'Razer', 'Garmin']
+const activeBrand = ref<string>('All')
 
 const internationalCategories = ['All', 'Electronics', 'Fashion', 'Food', 'Books', 'Beauty'] as const
 
-const countries = [
-  { name: 'Cambodia', flag: '🇰🇭' },
-  { name: 'Japan', flag: '🇯🇵' },
-  { name: 'Korea', flag: '🇰🇷' },
-  { name: 'China', flag: '🇨🇳' },
-  { name: 'Italy', flag: '🇮🇹' },
-  { name: 'USA', flag: '🇺🇸' },
-] as const
-
-
 onMounted(() => {
   if (typeof route.query.q === 'string') search.value = route.query.q
-  if (typeof route.query.cat === 'string') activeCat.value = route.query.cat
-  if (typeof route.query.brand === 'string') activeBrand.value = route.query.brand
+
+  // New sidebar query params
+  if (typeof route.query.iCat === 'string' && internationalCategories.includes(route.query.iCat as any)) {
+    activeICat.value = route.query.iCat as any
+  }
+
+  // Back-compat: if legacy `cat` query exists, map it into `iCat` when possible
+  if (typeof route.query.cat === 'string' && internationalCategories.includes(route.query.cat as any)) {
+    activeICat.value = route.query.cat as any
+  }
+
+  // Brand (kept as a legacy/new param; sidebar uses it)
+  if (typeof route.query.brand === 'string') {
+    const b = route.query.brand
+    if (brands.includes(b)) activeBrand.value = b
+  }
 })
 
-function pickCat(c: string) {
-  activeCat.value = c
-  router.replace({ query: { ...route.query, cat: c === 'All' ? undefined : c } })
+
+
+function pickICat(c: (typeof internationalCategories)[number]) {
+  // Tabs change should NOT break filtering.
+  // Clear legacy/old query params that are not used by this view.
+  activeICat.value = c
+  router.replace({
+    query: {
+      ...route.query,
+      iCat: c === 'All' ? undefined : c,
+      cat: undefined,
+      brand: undefined,
+    },
+  })
 }
+
+
 function pickBrand(b: string) {
   activeBrand.value = b
   router.replace({ query: { ...route.query, brand: b === 'All' ? undefined : b } })
 }
 
-function pickICat(c: (typeof internationalCategories)[number]) {
-  activeICat.value = c
-  router.replace({ query: { ...route.query, iCat: c === 'All' ? undefined : c } })
-}
-
-function pickCountry(c: (typeof countries)[number]['name'] | 'All') {
-  activeCountry.value = c
-  router.replace({ query: { ...route.query, country: c === 'All' ? undefined : c } })
-}
 
 
 const filtered = computed(() => {
   let list = products.slice()
 
-  // legacy filters
-  if (activeCat.value !== 'All') {
-    list = list.filter((p) => p.category === activeCat.value)
-  }
-  if (activeBrand.value !== 'All') {
-    list = list.filter((p) => p.brand === activeBrand.value)
-  }
-
-  // international filters
+  // Sidebar filters
   if (activeICat.value !== 'All') {
     list = list.filter((p) => p.iCategory === activeICat.value)
   }
-  if (activeCountry.value !== 'All') {
-    // avoid comparing with countryCode (different union types)
-    list = list.filter((p) => p.country === activeCountry.value)
+
+  if (activeBrand.value !== 'All') {
+    list = list.filter((p) => p.brand === activeBrand.value)
   }
-
-
 
   if (search.value.trim()) {
     const term = search.value.toLowerCase().trim()
@@ -102,6 +97,7 @@ const filtered = computed(() => {
         p.category.toLowerCase().includes(term),
     )
   }
+
 
   // rating (1-5)
   if (activeRating.value != null) {
@@ -143,10 +139,9 @@ const filtered = computed(() => {
 
 function clearFilters() {
   search.value = ''
-  activeCat.value = 'All'
-  activeBrand.value = 'All'
   activeICat.value = 'All'
-  activeCountry.value = 'All'
+  activeBrand.value = 'All'
+
 
   priceMin.value = null
   priceMax.value = null
@@ -156,6 +151,7 @@ function clearFilters() {
 
   router.replace({ query: {} })
 }
+
 </script>
 
 
@@ -185,15 +181,7 @@ function clearFilters() {
             <option value="Beauty">Beauty</option>
           </select>
 
-          <select v-model="activeCountry" aria-label="Country">
-            <option :value="'All'">Country: All</option>
-            <option value="Cambodia">Cambodia 🇰🇭</option>
-            <option value="Japan">Japan 🇯🇵</option>
-            <option value="Korea">Korea 🇰🇷</option>
-            <option value="China">China 🇨🇳</option>
-            <option value="Italy">Italy 🇮🇹</option>
-            <option value="USA">USA 🇺🇸</option>
-          </select>
+
 
           <div class="price-range" aria-label="Price Range">
             <input
@@ -239,70 +227,23 @@ function clearFilters() {
 
     <div class="layout">
       <aside class="side">
-        <div class="side-block">
-          <h3>Categories</h3>
-          <ul>
-            <li>
-              <button :class="{ active: activeCat === 'All' }" @click="pickCat('All')">
-                <span>All categories</span>
-                <span class="count">{{ products.length }}</span>
-              </button>
-            </li>
-            <li v-for="c in categories" :key="c.name">
-              <button :class="{ active: activeCat === c.name }" @click="pickCat(c.name)">
-                <span>
-                  <span class="material-symbols-rounded" aria-hidden="true">{{ c.icon }}</span>
-                  {{ c.name }}
-                </span>
-                <span class="count">{{ products.filter((p) => p.category === c.name).length }}</span>
-              </button>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Categories -->
+        <!-- Sidebar: International categories -->
         <div class="side-block">
           <h3>Categories</h3>
           <ul>
             <li v-for="c in internationalCategories" :key="c">
-              <button
-                :class="{ active: activeICat === c }"
-                @click="pickICat(c)"
-              >
+              <button :class="{ active: activeICat === c }" @click="pickICat(c)">
                 <span>{{ c }}</span>
-                <span class="count">{{ products.filter((p) => (c === 'All' ? true : p.iCategory === c)).length }}</span>
+                <span class="count">
+                  {{ products.filter((p) => (c === 'All' ? true : p.iCategory === c)).length }}
+                </span>
               </button>
             </li>
           </ul>
         </div>
 
-        <!-- Countries -->
-        <div class="side-block">
-          <h3>Countries</h3>
-          <ul>
-            <li>
-              <button
-                :class="{ active: activeCountry === 'All' }"
-                @click="pickCountry('All')"
-              >
-                <span>All</span>
-                <span class="count">{{ products.length }}</span>
-              </button>
-            </li>
-            <li v-for="c in countries" :key="c.name">
-              <button
-                :class="{ active: activeCountry === c.name }"
-                @click="pickCountry(c.name)"
-              >
-                <span>
-                  <span class="flag">{{ c.flag }}</span>
-                  {{ c.name }}
-                </span>
-                <span class="count">{{ products.filter((p) => p.country === c.name).length }}</span>
-              </button>
-            </li>
-          </ul>
-        </div>
+
+
 
 
         <div class="side-block">

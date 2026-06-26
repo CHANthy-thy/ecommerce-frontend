@@ -26,6 +26,8 @@ function submit() {
   setTimeout(() => {
     auth.register(form.name, form.email)
     submitting.value = false
+    // Customer-only frontend: new accounts are always 'customer'
+    // Admin access remains restricted by router guard.
     router.push('/')
   }, 500)
 }
@@ -60,7 +62,7 @@ function submit() {
         </label>
 
         <label class="field" :class="{ invalid: errors.password }">
-          <span>Password</span>
+          <span>Password</span> 
           <div class="input">
             <span class="micon">lock</span>
             <input v-model="form.password" type="password" placeholder="At least 6 characters" autocomplete="new-password" />

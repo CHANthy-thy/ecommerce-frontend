@@ -16,5 +16,15 @@ export const Keys = {
     themeLight: 'nav.theme.light',
     themeDark: 'nav.theme.dark',
   },
+  
+  home: {
+  hero: {
+    kicker: 'home.hero.kicker',
+    titleLine1: 'home.hero.title.line1',
+    titleLine2: 'home.hero.title.line2',
+    titleLine3: 'home.hero.title.line3',
+    desc: 'home.hero.desc',
+  },
+},
 } as const
 
