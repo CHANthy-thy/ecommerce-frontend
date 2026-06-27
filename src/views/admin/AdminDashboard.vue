@@ -189,4 +189,3 @@ const stats = computed(() => {
   .th span:nth-child(4), .tr span:nth-child(4) { display: none; }
 }
 </style>
-

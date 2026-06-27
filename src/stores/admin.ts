@@ -40,13 +40,13 @@ export interface AdminOrder {
 
 function seedCategories(): AdminCategory[] {
   return [
-    { id: 1, name: 'Smartphones', icon: 'smartphone' },
-    { id: 2, name: 'Laptops', icon: 'laptop_mac' },
-    { id: 3, name: 'Tablets', icon: 'tablet_mac' },
-    { id: 4, name: 'Smart Watches', icon: 'watch' },
-    { id: 5, name: 'Headphones', icon: 'headphones' },
-    { id: 6, name: 'Accessories', icon: 'cable' },
-    { id: 7, name: 'Gaming', icon: 'sports_esports' },
+    { id: 1, name: 'Cleanser', icon: 'water_drop' },
+    { id: 2, name: 'Toner', icon: 'water' },
+    { id: 3, name: 'Serum', icon: 'science' },
+    { id: 4, name: 'Moisturizer', icon: 'spa' },
+    { id: 5, name: 'Sunscreen', icon: 'wb_sunny' },
+    { id: 6, name: 'Face Mask', icon: 'self_improvement' },
+    { id: 7, name: 'Eye Care', icon: 'visibility' },
   ]
 }
 
@@ -72,65 +72,65 @@ export const useAdminStore = defineStore('admin', {
   state: () => ({
     categories: seedCategories() as AdminCategory[],
     products: [] as AdminProduct[],
-    users: [
-      { id: 'u_1', name: 'Alex Carter', email: 'alex.carter@shopmart.io', role: 'customer', status: 'Active' },
-      { id: 'u_2', name: 'Mia Johnson', email: 'mia.johnson@shopmart.io', role: 'customer', status: 'Active' },
-      { id: 'u_3', name: 'Admin', email: 'admin@shopmart.io', role: 'admin', status: 'Active' },
-      { id: 'u_4', name: 'Noah Brown', email: 'noah.brown@shopmart.io', role: 'customer', status: 'Suspended' },
-    ] as AdminUser[],
-    orders: [
-      {
-        id: 'SM-482103',
-        date: '2026-01-12',
-        status: 'Delivered',
-        total: 587.0,
-        items: [
-          {
-            name: 'Modern Lounge Chair',
-            qty: 1,
-            price: 549,
-            image: 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=400&q=80&auto=format&fit=crop',
-          },
-          {
-            name: 'Ceramic Pour-Over Set',
-            qty: 1,
-            price: 38,
-            image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&q=80&auto=format&fit=crop',
-          },
-        ],
-        userEmail: 'alex.carter@shopmart.io',
-      },
-      {
-        id: 'SM-482078',
-        date: '2026-01-08',
-        status: 'Shipped',
-        total: 249.0,
-        items: [
-          {
-            name: 'Wireless Noise-Cancel Headphones',
-            qty: 1,
-            price: 249,
-            image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80&auto=format&fit=crop',
-          },
-        ],
-        userEmail: 'mia.johnson@shopmart.io',
-      },
-      {
-        id: 'SM-481950',
-        date: '2025-12-30',
-        status: 'Processing',
-        total: 318.0,
-        items: [
-          {
-            name: 'Smart Fitness Watch',
-            qty: 1,
-            price: 179,
-            image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80&auto=format&fit=crop',
-          },
-        ],
-        userEmail: 'alex.carter@shopmart.io',
-      },
-    ],
+users: [
+       { id: 'u_1', name: 'SkinCare Haven', email: 'skincare.customer@skincarehaven.com', role: 'customer', status: 'Active' },
+       { id: 'u_2', name: 'Mia Johnson', email: 'mia.johnson@skincarehaven.com', role: 'customer', status: 'Active' },
+       { id: 'u_3', name: 'Admin', email: 'admin@skincarehaven.com', role: 'admin', status: 'Active' },
+       { id: 'u_4', name: 'Noah Brown', email: 'noah.brown@skincarehaven.com', role: 'customer', status: 'Suspended' },
+     ] as AdminUser[],
+orders: [
+       {
+         id: 'SC-482103',
+         date: '2026-01-12',
+         status: 'Delivered',
+         total: 58.70,
+         items: [
+           {
+             name: 'CeraVe Foaming Cleanser',
+             qty: 1,
+             price: 14.99,
+             image: 'https://images.unsplash.com/photo-1615390782511-7f4d0f8d3b2a?w=400&q=80&auto=format&fit=crop',
+           },
+           {
+             name: 'COSRX The Niacinamide Serum',
+             qty: 1,
+             price: 28.99,
+             image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&q=80&auto=format&fit=crop',
+           },
+         ],
+         userEmail: 'skincare.customer@skincarehaven.com',
+       },
+       {
+         id: 'SC-482078',
+         date: '2026-01-08',
+         status: 'Shipped',
+         total: 24.99,
+         items: [
+           {
+             name: 'La Roche-Posay Hydrating Toner',
+             qty: 1,
+             price: 19.99,
+             image: 'https://images.unsplash.com/photo-1585232351009-eebafc5b2d0f?w=400&q=80&auto=format&fit=crop',
+           },
+         ],
+         userEmail: 'mia.johnson@skincarehaven.com',
+       },
+       {
+         id: 'SC-481950',
+         date: '2025-12-30',
+         status: 'Processing',
+         total: 22.99,
+         items: [
+           {
+             name: 'Anua Heartleaf Toner',
+             qty: 1,
+             price: 19.99,
+             image: 'https://images.unsplash.com/photo-1585232351009-eebafc5b2d0f?w=400&q=80&auto=format&fit=crop',
+           },
+         ],
+         userEmail: 'skincare.customer@skincarehaven.com',
+       },
+     ],
   }),
 
   getters: {

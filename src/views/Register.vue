@@ -39,7 +39,7 @@ function submit() {
       <div class="head">
         <span class="brand-mark">SM</span>
         <h2>Create your account</h2>
-        <p>Join ShopMart in a few seconds.</p>
+        <p>Join SkinCare Haven in a few seconds.</p>
       </div>
 
       <form @submit.prevent="submit" novalidate>

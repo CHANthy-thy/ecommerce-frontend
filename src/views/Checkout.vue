@@ -17,7 +17,7 @@ const placed = ref(false)
 const orderId = ref('')
 
 
-const shipping = computed(() => (cart.subtotal >= 75 ? 0 : 9.99))
+const shipping = computed(() => (cart.subtotal >= 50 ? 0 : 9.99))
 const total = computed(() => cart.subtotal + shipping.value)
 
 function validate() {
@@ -36,7 +36,7 @@ function placeOrder() {
 
   placing.value = true
   setTimeout(() => {
-    orderId.value = 'SM-' + Math.floor(100000 + Math.random() * 900000).toString()
+    orderId.value = 'SC-' + Math.floor(100000 + Math.random() * 900000).toString()
 
     const status: OrderStatus = 'Processing'
     const ownerKey = auth.user?.email ?? 'guest@local'

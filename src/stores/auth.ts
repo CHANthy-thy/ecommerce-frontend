@@ -31,8 +31,8 @@ export const useAuthStore = defineStore('auth', {
     const stored = safeParseUser(localStorage.getItem(STORAGE_KEY))
 
     const defaultUser: StoredUser = {
-      name: 'Shop_ZhenZ',
-      email: 'alex.carter@shopmart.io',
+      name: 'SkinCare Haven',
+      email: 'skincare.customer@skincarehaven.com',
       role: 'customer',
       avatar: 'https://i.pravatar.cc/150?u=alexcarter',
     }
@@ -45,10 +45,10 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     login(email: string, _password: string) {
       const role: UserRole =
-        email.toLowerCase() === 'admin@shopmart.io' ? 'admin' : 'customer'
+        email.toLowerCase() === 'admin@skincarehaven.com' ? 'admin' : 'customer'
 
       this.user = {
-        name: role === 'admin' ? 'Admin' : 'Shop_ZhenZ',
+        name: role === 'admin' ? 'Admin' : 'SkinCare Haven',
         email,
         role,
         avatar:

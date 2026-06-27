@@ -1,9 +1,6 @@
-# TODO - Country filter removal (Products page)
+- [x] Inspect international sample product files (usa/korea/japan/china/cambodia/italy) for electronics content
+- [ ] Replace all electronics-related sample data with skincare data while keeping types/shape compatible
+- [ ] Remove remaining non-skincare products (smartphones, laptops, tablets, watches, headphones, accessories, gaming) from src/data/products.ts
+- [ ] Run TypeScript/Vite build or tests to ensure no runtime/type errors
 
-- [ ] Inspect `src/views/Products.vue` for country filter UI + state/query/computed logic.
-- [ ] Remove `activeCountry`, `countries`, `pickCountry`, route.query.country hydration, and computed filtering for country.
-- [ ] Remove Country filter UI (top select + sidebar Countries block).
-- [ ] Ensure layout spacing remains clean (no empty gaps / broken grid).
-- [ ] Confirm other filters still work: category, price, rating, search, sorting, shipping.
-- [ ] Quick build check (run frontend tests/build if available).
 

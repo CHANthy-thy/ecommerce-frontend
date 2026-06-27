@@ -95,6 +95,7 @@ function toggleWish() {
         {{ product.name }}
       </RouterLink>
 
+      <div v-if="product.brand" class="brand">{{ product.brand }}</div>
 
       <div class="rating" aria-label="Rating">
         <span class="stars">
@@ -257,7 +258,7 @@ function toggleWish() {
 .media {
   position: relative;
   aspect-ratio: 1 / 1;
-  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+  background: linear-gradient(135deg, #F5EBDD 0%, #e8e0d5 100%);
   overflow: hidden;
 }
 .media-link {

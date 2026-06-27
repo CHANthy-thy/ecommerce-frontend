@@ -117,7 +117,7 @@ const onCoverFile = (e: Event) => {
         <form class="f" @submit.prevent="save">
           <label class="field" :class="{ invalid: errors.name }">
             <span>Name</span>
-            <input v-model="form.name" placeholder="e.g. Electronics" />
+            <input v-model="form.name" placeholder="e.g. Cleanser" />
             <small v-if="errors.name" class="err">{{ errors.name }}</small>
           </label>
 

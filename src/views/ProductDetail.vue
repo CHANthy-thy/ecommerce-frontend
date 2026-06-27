@@ -43,29 +43,29 @@ const reviews = computed(() => {
   if (!product.value) return []
   const base = [
     {
-      name: 'Marcus T.',
+      name: 'Sophia R.',
       rating: 5,
       date: '2 weeks ago',
-      title: 'Absolutely love it',
-      body: 'Exceeded my expectations. Build quality, performance, and battery life are all top notch.',
+      title: 'Absolutely love this serum',
+      body: 'My skin feels so much smoother and hydrated after using this for just two weeks. The texture is lightweight and absorbs beautifully.',
       verified: true,
-      avatar: 'https://i.pravatar.cc/150?u=marcus',
+      avatar: 'https://i.pravatar.cc/150?u=sophia',
     },
     {
-      name: 'Sophia L.',
+      name: 'Marcus L.',
       rating: 5,
       date: '1 month ago',
       title: 'Worth every penny',
-      body: 'Fast shipping and great packaging. The product feels premium and works exactly as advertised.',
+      body: 'Fast shipping and great packaging. The product feels premium and works exactly as advertised. My skin barrier has never felt better.',
       verified: true,
-      avatar: 'https://i.pravatar.cc/150?u=sophia',
+      avatar: 'https://i.pravatar.cc/150?u=marcus',
     },
     {
       name: 'Daniel K.',
       rating: 4,
       date: '1 month ago',
-      title: 'Solid, with one small note',
-      body: 'Performance is excellent. Only wish the included cable was a bit longer.',
+      title: 'Solid product, gentle formula',
+      body: 'Results are excellent. Very gentle on my sensitive skin. Only wish the bottle was a bit larger for the price.',
       verified: true,
       avatar: 'https://i.pravatar.cc/150?u=daniel',
     },
@@ -216,11 +216,11 @@ function toggleWish() {
 
         <button class="btn buy" @click="buy" :disabled="product.stock === 0">Buy now · ${{ (product.price * qty).toFixed(2) }}</button>
 
-        <ul class="meta">
-          <li><span class="material-symbols-rounded" aria-hidden="true">local_shipping</span> Free express shipping over $199</li>
-          <li><span class="material-symbols-rounded" aria-hidden="true">undo</span> Free 30-day returns</li>
-          <li><span class="material-symbols-rounded" aria-hidden="true">verified</span> Official manufacturer warranty</li>
-        </ul>
+<ul class="meta">
+           <li><span class="material-symbols-rounded" aria-hidden="true">local_shipping</span> Free shipping over $50</li>
+           <li><span class="material-symbols-rounded" aria-hidden="true">undo</span> 30-day returns</li>
+           <li><span class="material-symbols-rounded" aria-hidden="true">verified_user</span> Dermatologist-tested</li>
+         </ul>
       </div>
     </div>
 
@@ -242,7 +242,7 @@ function toggleWish() {
           <div class="spec-row"><span>Category</span><strong>{{ product.category }}</strong></div>
           <div class="spec-row"><span>Stock</span><strong>{{ product.stock }} units</strong></div>
           <div class="spec-row"><span>Rating</span><strong>{{ product.rating }} / 5</strong></div>
-          <div class="spec-row"><span>SKU</span><strong>SM-{{ String(product.id).padStart(5, '0') }}</strong></div>
+          <div class="spec-row"><span>SKU</span><strong>SC-{{ String(product.id).padStart(5, '0') }}</strong></div>
           <div v-if="product.highlights" class="spec-row">
             <span>Key features</span>
             <strong>{{ product.highlights.join(' · ') }}</strong>

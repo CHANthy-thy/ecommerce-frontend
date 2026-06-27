@@ -1,4 +1,4 @@
-﻿﻿<script setup lang="ts">
+﻿<script setup lang="ts">
 import { useWishlistStore } from '@/stores/wishlist'
 import { useCartStore } from '@/stores/cart'
 
@@ -27,7 +27,7 @@ function moveToCart(item: { id: number; name: string; price: number; image: stri
       <span class="micon">favorite_border</span>
       <h2>Nothing saved yet</h2>
       <p>Tap the heart on any product to save it for later.</p>
-      <RouterLink to="/products" class="btn primary">Discover products</RouterLink>
+        <RouterLink to="/products" class="btn primary">Discover skincare</RouterLink>
     </div>
 
     <div v-else class="grid">

@@ -41,17 +41,17 @@ function safeParseWishItems(json: string | null): WishItem[] | null {
 const seededWishlist: WishItem[] = [
   {
     id: 2,
-    name: 'Minimalist Leather Backpack',
-    price: 129.0,
-    image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80&auto=format&fit=crop',
-    rating: 4.6,
+    name: 'La Roche-Posay Hydrating Toner',
+    price: 19.5,
+    image: 'https://images.unsplash.com/photo-1585232351009-eebafc5b2d0f?w=600&q=80&auto=format&fit=crop',
+    rating: 4.7,
   },
   {
     id: 4,
-    name: 'Mechanical Keyboard RGB',
-    price: 149.0,
-    image: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&q=80&auto=format&fit=crop',
-    rating: 4.9,
+    name: 'COSRX The Niacinamide Serum',
+    price: 22.99,
+    image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80&auto=format&fit=crop',
+    rating: 4.8,
   },
 ]
 

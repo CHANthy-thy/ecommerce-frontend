@@ -47,16 +47,16 @@ function safeParseCartItems(json: string | null): CartItem[] | null {
 const seededCart: CartItem[] = [
   {
     id: 1,
-    name: 'Wireless Noise-Cancel Headphones',
-    price: 249.0,
-    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80&auto=format&fit=crop',
+    name: 'CeraVe Foaming Cleanser (Daily Refresh)',
+    price: 14.99,
+    image: 'https://images.unsplash.com/photo-1615390782511-7f4d0f8d3b2a?w=600&q=80&auto=format&fit=crop',
     quantity: 1,
   },
   {
-    id: 3,
-    name: 'Smart Fitness Watch',
-    price: 179.0,
-    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80&auto=format&fit=crop',
+    id: 2,
+    name: 'La Roche-Posay Hydrating Toner',
+    price: 19.5,
+    image: 'https://images.unsplash.com/photo-1585232351009-eebafc5b2d0f?w=600&q=80&auto=format&fit=crop',
     quantity: 2,
   },
 ]
@@ -72,10 +72,6 @@ export const useCartStore = defineStore('cart', {
   getters: {
     count: (s) => s.items.reduce((a, i) => a + i.quantity, 0),
     subtotal: (s) => s.items.reduce((a, i) => a + i.price * i.quantity, 0),
-    shipping: (s) => (s.items.length === 0 ? 0 : 9.99),
-    total(): number {
-      return this.subtotal + (this.items.length === 0 ? 0 : 9.99)
-    },
   },
   actions: {
     _persist() {

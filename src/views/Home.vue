@@ -1,606 +1,548 @@
 ﻿<script setup lang="ts">
 import { computed } from 'vue'
-import { products, categories } from '@/data/products'
+import { products, categories, brands } from '@/data/products'
 import ProductCard from '@/components/ProductCard.vue'
 import { useI18n } from '@/composables/useI18n'
 
 const { t } = useI18n()
 
 const featured = computed(() => products.filter((p) => p.isFeatured).slice(0, 8))
-const newArrivals = computed(() => products.filter((p) => p.isNew).slice(0, 8))
-const bestSellers = computed(() => products.filter((p) => p.isBestSeller).slice(0, 8))
-
-const topJapanProducts = computed(() =>
-  products
-    .filter((p) => p.country === 'Japan')
-    .slice()
-    .sort((a, b) => b.reviews - a.reviews)
-    .slice(0, 8),
-)
-
-const topUsaProducts = computed(() =>
-  products
-    .filter((p) => p.country === 'USA')
-    .slice()
-    .sort((a, b) => b.reviews - a.reviews)
-    .slice(0, 8),
-)
+const productCounts = computed(() => {
+  const counts: Record<string, number> = {}
+  products.forEach(p => {
+    if (p.iCategory) {
+      counts[p.iCategory] = (counts[p.iCategory] || 0) + 1
+    }
+  })
+  return counts
+})
 </script>
-
 
 <template>
   <div class="home">
-    <!-- HERO -->
+    <!-- HERO SECTION -->
     <section class="hero">
-      <div class="container hero-grid">
-        <div class="hero-copy">
-        <span class="kicker">{{ t('home.hero.kicker') }}</span>
-          <h1>
+      <div class="container hero-container">
+        <div class="hero-content">
+          <span class="kicker">{{ t('home.hero.kicker') }}</span>
+          <h1 class="hero-title">
             {{ t('home.hero.title.line1') }}<br />
-            <span class="grad">{{ t('home.hero.title.line2') }}</span><br />
+            <span class="highlight">{{ t('home.hero.title.line2') }}</span><br />
             {{ t('home.hero.title.line3') }}
           </h1>
-          <p class="lede">
+          <p class="hero-desc">
             {{ t('home.hero.desc') }}
           </p>
-          <div class="cta">
+          <div class="hero-actions">
             <RouterLink to="/products" class="btn primary lg">
               {{ t('home.cta.shopNew') }}
               <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span>
             </RouterLink>
-            <RouterLink to="/products?cat=Gaming" class="btn ghost lg">{{ t('home.cta.gamingDeals') }}</RouterLink>
           </div>
-
-          <ul class="pills">
-            <li><span class="material-symbols-rounded" aria-hidden="true">local_shipping</span> {{ t('home.hero.pills.shipping') }}</li>
-            <li><span class="material-symbols-rounded" aria-hidden="true">undo</span> {{ t('home.hero.pills.returns') }}</li>
-            <li><span class="material-symbols-rounded" aria-hidden="true">verified</span> {{ t('home.hero.pills.warranty') }}</li>
-          </ul>
+          <div class="trust-badges">
+            <div class="badge">
+              <span class="material-symbols-rounded">verified</span>
+              Dermatologist Tested
+            </div>
+            <div class="badge">
+              <span class="material-symbols-rounded">verified_user</span>
+              100% Authentic
+            </div>
+            <div class="badge">
+              <span class="material-symbols-rounded">local_shipping</span>
+              Fast Delivery
+            </div>
+            <div class="badge">
+              <span class="material-symbols-rounded">lock</span>
+              Secure Payment
+            </div>
+          </div>
         </div>
-
-        <div class="hero-art" aria-hidden="true">
-          <div class="blob blob-a"></div>
-          <div class="blob blob-b"></div>
+        <div class="hero-image-wrapper">
           <img
-            class="hero-img"
-            src="https://images.unsplash.com/photo-1593344484962-796055d4a3a4?w=900&q=80&auto=format&fit=crop"
-            alt=""
+            src="https://images.unsplash.com/photo-1556228578-4b2b3b7d6e7a?w=1000&q=80&auto=format&fit=crop"
+            alt="Skincare products"
+            class="hero-image"
           />
-          <div class="float-card">
-            <div class="float-icon">⚡</div>
+          <div class="float-badge">
+            <span class="badge-icon">✨</span>
             <div>
-              <strong>Apple iPhone 16 Pro</strong>
-              <span>From $999 · In stock now</span>
+              <strong>CeraVe Hydrating Cleanser</strong>
+              <span>From $12.99 · In stock now</span>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- CATEGORIES -->
-    <section class="container cats">
-      <div v-for="c in categories" :key="c.name" class="cat">
-        <RouterLink :to="`/products?cat=${c.name}`" class="cat-link">
-          <div class="cat-img">
-            <img :src="c.cover" :alt="c.name" />
+    <!-- CATEGORIES SECTION -->
+    <section class="container categories-section">
+      <div class="section-header">
+        <h2>Shop by Category</h2>
+        <p>Find your perfect skincare routine</p>
+      </div>
+      <div class="categories-grid">
+        <RouterLink
+          v-for="cat in categories"
+          :key="cat.name"
+          :to="`/products?cat=${cat.name}`"
+          class="category-card"
+        >
+          <div class="category-image">
+            <img :src="cat.cover" :alt="cat.name" />
           </div>
-          <div class="cat-info">
-            <h3>{{ c.name }}</h3>
-            <span class="link">
-              Shop now
-              <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span>
-            </span>
+          <div class="category-info">
+            <h3>{{ cat.name }}</h3>
+            <span class="product-count">{{ productCounts[cat.name] || 0 }} products</span>
           </div>
         </RouterLink>
       </div>
     </section>
 
-    <!-- FEATURED -->
+    <!-- FEATURED PRODUCTS -->
     <section class="container section">
       <div class="section-head">
         <div>
-          <span class="kicker">Featured</span>
-              <h2>Editor's picks</h2>
-              <RouterLink to="/products" class="link">View all...</RouterLink>
-              <span class="kicker">{{ t('home.kicker.featured') }}</span>
-              <h2>{{ t('home.section.featured') }}</h2>
-              <RouterLink to="/products" class="link">{{ t('actions.browseProducts') }} 
-              <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span>
-        </RouterLink>
+          <h2>Editor's Picks</h2>
+          <p>Our best-selling skincare essentials</p>
         </div>
-        <RouterLink to="/products" class="link">View all <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span></RouterLink>
+        <RouterLink to="/products" class="link">
+          View all <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span>
+        </RouterLink>
       </div>
-
       <div class="grid">
         <ProductCard v-for="p in featured" :key="p.id" :product="p" />
       </div>
     </section>
 
-    <!-- BANNER -->
-    <section class="container banner-wrap">
-      <div class="banner">
-        <div class="banner-copy">
-          <span class="kicker light">Limited time</span>
-          <h2>Up to 30% off on selected pieces.</h2>
-          <p>Apple, Samsung, Sony, Razer — biggest savings of the season.</p>
-          <RouterLink to="/products" class="btn primary lg light">
-            Shop the sale
-            <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span>
-          </RouterLink>
-        </div>
-        <div class="banner-art">
-          <div class="b-blob"></div>
-          <img
-            src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=900&q=80&auto=format&fit=crop"
-            alt=""
-          />
+    <!-- POPULAR BRANDS -->
+    <section class="container brands-section">
+      <div class="section-header">
+        <h2>Popular Brands</h2>
+        <p>Trusted by skincare enthusiasts worldwide</p>
+      </div>
+      <div class="brands-grid">
+        <div v-for="brand in brands" :key="brand" class="brand-card">
+          <div class="brand-logo">{{ brand.split(' ')[0][0] }}{{ brand.split(' ').pop()?.[0] || '' }}</div>
+          <span class="brand-name">{{ brand }}</span>
         </div>
       </div>
     </section>
 
-    <!-- BEST SELLERS -->
-    <section class="container section">
-      <div class="section-head">
-        <div>
-          <span class="kicker">Customer favorites</span>
-          <h2>Best sellers</h2>
+    <!-- WHY CHOOSE US -->
+    <section class="container why-section">
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="why-icon">
+            <span class="material-symbols-rounded">verified</span>
+          </div>
+          <h3>Authentic Products</h3>
+          <p>100% genuine skincare from authorized retailers</p>
         </div>
-        <RouterLink to="/products" class="link">View all <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span></RouterLink>
-      </div>
-
-      <div class="grid">
-        <ProductCard v-for="p in bestSellers" :key="p.id" :product="p" />
+        <div class="why-card">
+          <div class="why-icon">
+            <span class="material-symbols-rounded">local_shipping</span>
+          </div>
+          <h3>Fast Shipping</h3>
+          <p>Quick delivery on orders over $50</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">
+            <span class="material-symbols-rounded">science</span>
+          </div>
+          <h3>Dermatologist Recommended</h3>
+          <p>Scientifically formulated for all skin types</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">
+            <span class="material-symbols-rounded">lock</span>
+          </div>
+          <h3>Secure Payment</h3>
+          <p>Your payment information is always protected</p>
+        </div>
       </div>
     </section>
 
-    <!-- NEW ARRIVALS -->
-    <section v-if="newArrivals.length" class="container section">
-      <div class="section-head">
-        <div>
-          <span class="kicker">Fresh in</span>
-          <h2>New arrivals</h2>
-        </div>
-        <RouterLink to="/products" class="link">View all <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span></RouterLink>
-      </div>
-
-      <div class="grid">
-        <ProductCard v-for="p in newArrivals" :key="p.id" :product="p" />
-      </div>
-    </section>
-
-    <!-- TOP BY COUNTRY -->
-    <section class="container section">
-      <div class="section-head">
-        <div>
-          <span class="kicker">Trending</span>
-          <h2>Top Japan Products</h2>
-        </div>
-        <RouterLink to="/products?country=Japan" class="link">
-          View all
-          <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span>
-        </RouterLink>
-      </div>
-
-      <div class="grid">
-        <ProductCard v-for="p in topJapanProducts" :key="p.id" :product="p" />
-      </div>
-    </section>
-
-    <section class="container section">
-      <div class="section-head">
-        <div>
-          <span class="kicker">Trending</span>
-          <h2>Top USA Products</h2>
-        </div>
-        <RouterLink to="/products?country=USA" class="link">
-          View all
-          <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span>
-        </RouterLink>
-      </div>
-
-      <div class="grid">
-        <ProductCard v-for="p in topUsaProducts" :key="p.id" :product="p" />
+    <!-- NEWSLETTER -->
+    <section class="newsletter-section">
+      <div class="container newsletter-container">
+        <h2>Glow with us</h2>
+        <p>Get the latest skincare tips, new arrivals, and exclusive offers delivered to your inbox</p>
+        <form class="newsletter-form" @submit.prevent>
+          <input type="email" placeholder="Enter your email" aria-label="Email" />
+          <button type="submit" class="btn primary">Subscribe</button>
+        </form>
       </div>
     </section>
   </div>
 </template>
 
-
 <style scoped>
-.home {
-  padding-bottom: 40px;
-}
-
-/* HERO */
 .hero {
+  background: linear-gradient(135deg, #8BC6A2 0%, #6A9C89 100%);
+  padding: 80px 0;
   position: relative;
-  padding: 48px 0 32px;
   overflow: hidden;
 }
-.hero-grid {
+
+.hero-container {
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 40px;
   align-items: center;
 }
-.kicker {
-  display: inline-block;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--accent);
-  background: var(--accent-soft);
-  padding: 6px 12px;
-  border-radius: 999px;
-}
-.kicker.light {
-  color: #c4b5fd;
-  background: rgba(255, 255, 255, 0.1);
-}
-.hero-copy h1 {
-  margin: 18px 0 16px;
-  font-size: 56px;
-  line-height: 1.05;
-  letter-spacing: -0.03em;
-}
-.grad {
-  background: linear-gradient(120deg, var(--accent) 0%, var(--accent-2) 60%, #ec4899 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.lede {
-  font-size: 17px;
-  line-height: 1.6;
-  color: var(--text);
-  max-width: 520px;
-}
-.cta {
-  display: flex;
-  gap: 12px;
-  margin-top: 24px;
-  flex-wrap: wrap;
-}
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  height: 44px;
-  padding: 0 20px;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 14.5px;
-  text-decoration: none;
-  border: 1px solid transparent;
-  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease, color 160ms ease, border-color 160ms ease;
-  cursor: pointer;
-}
-.btn.lg {
-  height: 52px;
-  padding: 0 24px;
-  font-size: 15px;
-  border-radius: 14px;
-}
-.btn.primary {
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
-  color: #fff;
-  box-shadow: var(--shadow-accent);
-}
-.btn.primary:hover {
-  transform: translateY(-2px);
-}
-.btn.primary.light {
-  background: #fff;
-  color: var(--accent);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
-}
-.btn.ghost {
-  background: #fff;
-  color: var(--text-h);
-  border-color: var(--border);
-}
-.btn.ghost:hover {
-  border-color: var(--accent-border);
-  color: var(--accent);
-  background: var(--accent-soft);
-}
-.btn .material-symbols-rounded {
-  font-size: 18px;
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-}
 
-.pills {
-  display: flex;
-  gap: 24px;
-  margin-top: 28px;
-  flex-wrap: wrap;
-  list-style: none;
-  padding: 0;
-  font-size: 13.5px;
-  color: var(--text);
-}
-.pills li {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-.pills .material-symbols-rounded {
-  font-size: 18px;
-  color: var(--accent);
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-}
-
-/* HERO art */
-.hero-art {
-  position: relative;
-  aspect-ratio: 5 / 4.5;
-  border-radius: 28px;
-  overflow: hidden;
-  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
-  box-shadow: var(--shadow-lg);
-}
-.hero-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(40px);
-  opacity: 0.5;
-}
-.blob-a {
-  width: 220px;
-  height: 220px;
-  top: -40px;
-  right: -40px;
-  background: #c4b5fd;
-}
-.blob-b {
-  width: 260px;
-  height: 260px;
-  bottom: -60px;
-  left: -60px;
-  background: #f9a8d4;
-}
-.float-card {
-  position: absolute;
-  bottom: 18px;
-  left: 18px;
-  right: 18px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 14px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  box-shadow: var(--shadow);
-}
-.float-card > div {
+.hero-content {
   display: flex;
   flex-direction: column;
-  line-height: 1.2;
-}
-.float-card strong {
-  color: var(--text-h);
-  font-size: 14px;
-}
-.float-card span {
-  color: var(--text-muted);
-  font-size: 12.5px;
-}
-.float-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  background: var(--accent-soft);
-  display: grid;
-  place-items: center;
-  font-size: 20px;
-}
-
-/* CATEGORIES */
-.cats {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 14px;
-  margin: 56px auto 24px;
-}
-.cat {
-  position: relative;
-  height: 200px;
-  border-radius: 18px;
-  overflow: hidden;
-  background: #fff;
-  border: 1px solid var(--border-soft);
-  transition: transform 200ms ease, box-shadow 200ms ease;
-}
-.cat:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow);
-}
-.cat-link {
-  display: block;
-  width: 100%;
-  height: 100%;
-  text-decoration: none;
-  color: inherit;
-}
-.cat-img {
-  position: absolute;
-  inset: 0;
-}
-.cat-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 500ms ease;
-}
-.cat:hover .cat-img img {
-  transform: scale(1.06);
-}
-.cat::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0.7) 100%);
-}
-.cat-info {
-  position: absolute;
-  inset: auto 14px 14px 14px;
-  z-index: 1;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-.cat-info h3 {
-  color: #fff;
-  font-size: 15px;
-}
-.link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--accent);
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 14px;
-  transition: gap 160ms ease;
-}
-.link:hover {
-  gap: 10px;
-}
-.link .material-symbols-rounded,
-.cat-info .material-symbols-rounded {
-  font-size: 16px;
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-}
-
-/* SECTIONS */
-.section {
-  margin: 48px auto;
-}
-.section-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-.section-head h2 {
-  margin-top: 6px;
-}
-.grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
 }
 
-/* BANNER */
-.banner-wrap {
-  margin: 56px auto;
-}
-.banner {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  background: linear-gradient(135deg, #1f1d2e 0%, #0b0a14 100%);
-  border-radius: 28px;
-  overflow: hidden;
+.kicker {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
   color: #fff;
-  min-height: 320px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 6px 12px;
+  border-radius: 999px;
+  align-self: flex-start;
 }
-.banner-copy {
-  padding: 44px 44px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  align-items: flex-start;
-}
-.banner-copy h2 {
-  color: #fff;
-  font-size: 36px;
+
+.hero-title {
+  font-size: 48px;
   line-height: 1.1;
+  color: #fff;
+  margin: 0;
 }
-.banner-copy p {
-  color: #c8c6d0;
-  font-size: 15px;
+
+.highlight {
+  color: #F5EBDD;
 }
-.banner-art {
+
+.hero-desc {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.trust-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: #fff;
+}
+
+.hero-image-wrapper {
   position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.hero-image {
+  width: 100%;
+  max-width: 500px;
+  border-radius: 20px;
+  object-fit: cover;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
+.float-badge {
+  position: absolute;
+  bottom: -20px;
+  left: 40px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.badge-icon {
+  font-size: 20px;
+}
+
+/* Categories */
+.categories-section {
+  padding: 80px 0 40px;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.section-header h2 {
+  font-size: 32px;
+  color: #0b0a14;
+}
+
+.section-header p {
+  color: #6b6375;
+  margin-top: 8px;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+}
+
+.category-card {
+  text-decoration: none;
+  background: #fff;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.category-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow);
+}
+
+.category-image {
+  aspect-ratio: 1 / 1;
+  background: #F5EBDD;
   overflow: hidden;
 }
-.banner-art img {
-  position: absolute;
-  inset: 0;
+
+.category-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.95;
-}
-.b-blob {
-  position: absolute;
-  width: 280px;
-  height: 280px;
-  border-radius: 50%;
-  background: var(--accent);
-  filter: blur(60px);
-  opacity: 0.4;
-  top: -40px;
-  right: -40px;
 }
 
-@media (max-width: 1200px) {
-  .cats {
-    grid-template-columns: repeat(4, 1fr);
-  }
+.category-info {
+  padding: 16px;
+  text-align: center;
 }
-@media (max-width: 1024px) {
-  .grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .hero-copy h1 {
-    font-size: 44px;
-  }
+
+.category-info h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  color: #0b0a14;
 }
-@media (max-width: 860px) {
-  .hero-grid {
-    grid-template-columns: 1fr;
-  }
-  .cats {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .banner {
-    grid-template-columns: 1fr;
-  }
-  .banner-copy {
-    padding: 28px;
-  }
-  .banner-copy h2 {
-    font-size: 26px;
-  }
-  .banner-art {
-    display: none;
-  }
+
+.product-count {
+  font-size: 12px;
+  color: #6b6375;
 }
-@media (max-width: 480px) {
-  .hero-copy h1 {
-    font-size: 34px;
-  }
-  .lede {
-    font-size: 15px;
-  }
-  .cats {
+
+/* Featured Products */
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 24px;
+}
+
+.section-head h2 {
+  font-size: 28px;
+}
+
+.section-head p {
+  color: #6b6375;
+  margin: 4px 0 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+/* Brands */
+.brands-section {
+  padding: 60px 0;
+}
+
+.brands-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 20px;
+}
+
+.brand-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 24px 16px;
+  text-align: center;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.brand-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+}
+
+.brand-logo {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #8BC6A2, #6A9C89);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.brand-name {
+  font-size: 13px;
+  color: #0b0a14;
+  font-weight: 600;
+}
+
+/* Why Choose Us */
+.why-section {
+  padding: 60px 0;
+}
+
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+}
+
+.why-card {
+  background: #F5EBDD;
+  border-radius: var(--r-lg);
+  padding: 32px 20px;
+  text-align: center;
+  transition: transform 200ms ease;
+}
+
+.why-card:hover {
+  transform: translateY(-4px);
+}
+
+.why-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: #8BC6A2;
+  display: grid;
+  place-items: center;
+}
+
+.why-icon .material-symbols-rounded {
+  font-size: 28px;
+  color: #fff;
+}
+
+.why-card h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.why-card p {
+  margin: 0;
+  font-size: 14px;
+  color: #6b6375;
+  line-height: 1.5;
+}
+
+/* Newsletter */
+.newsletter-section {
+  background: linear-gradient(135deg, #6A9C89 0%, #8BC6A2 100%);
+  padding: 60px 0;
+  margin-top: 40px;
+}
+
+.newsletter-container {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.newsletter-section h2 {
+  color: #fff;
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.newsletter-section p {
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 24px;
+}
+
+.newsletter-form {
+  display: flex;
+  gap: 12px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.newsletter-form input {
+  flex: 1;
+  padding: 14px 18px;
+  border: 0;
+  border-radius: 12px;
+  font-size: 15px;
+  outline: none;
+}
+
+.newsletter-form input::placeholder {
+  color: #9ca3af;
+}
+
+@media (max-width: 768px) {
+  .hero-container {
     grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .hero-title {
+    font-size: 36px;
+  }
+
+  .trust-badges {
+    justify-content: center;
+  }
+
+  .hero-image {
+    max-width: 400px;
+    margin: 40px auto 0;
+  }
+
+  .float-badge {
+    left: auto;
+    right: 20px;
+  }
+
+  .section-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .newsletter-form {
+    flex-direction: column;
   }
 }
 </style>

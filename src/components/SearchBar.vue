@@ -18,7 +18,7 @@ function submit() {
     <input
       v-model="q"
       type="search"
-      placeholder="Search products…"
+      placeholder="Search skincare…"
       aria-label="Search products"
     />
   </form>

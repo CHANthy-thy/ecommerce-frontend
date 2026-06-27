@@ -7,11 +7,11 @@ const auth = useAuthStore()
 const tab = ref<'personal' | 'password' | 'preferences'>('personal')
 
 const profile = reactive({
-  name: auth.user?.name ?? 'Alex Carter',
-  email: auth.user?.email ?? 'alex.carter@shopmart.io',
-  phone: '+1 555 000 1234',
-  address: '123 Market Street, San Francisco, CA 94103',
-})
+    name: auth.user?.name ?? 'SkinCare Haven',
+    email: auth.user?.email ?? 'skincare.customer@skincarehaven.com',
+    phone: '+1 555 000 1234',
+    address: '123 Beauty Boulevard, Los Angeles, CA 90001',
+  })
 const profileErrors = reactive<Record<string, string>>({})
 const saving = ref(false)
 const saved = ref(false)
@@ -180,7 +180,7 @@ function changePassword() {
         <!-- PREFERENCES -->
         <div v-else class="card">
           <h3>Preferences</h3>
-          <p class="muted">Customize how ShopMart communicates with you.</p>
+          <p class="muted">Customize how SkinCare Haven communicates with you.</p>
 
           <div class="pref">
             <div>

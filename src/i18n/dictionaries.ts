@@ -2,19 +2,19 @@ export type Lang = 'kh' | 'en'
 
 export const dictionaries: Record<Lang, Record<string, string>> = {
   kh: {
-    'home.hero.kicker': 'ចំណូលចិត្តថ្មី',
-    'home.hero.title.line1': 'ស្វែងរកបច្ចេកវិទ្យា',
-    'home.hero.title.line2': 'ដែលទំនើបបំផុត',
-    'home.hero.title.line3': 'សម្រាប់អ្នក',
+    'home.hero.kicker': 'ស្កូរខ្ញុំ',
+    'home.hero.title.line1': 'ជម្រើសសក្កដាភ្លើង',
+    'home.hero.title.line2': 'សម្រាប់ស្បែកស្រស់ស្អាត',
+    'home.hero.title.line3': 'របស់អ្នក',
 
-    'home.cta.shopNew': 'ទិញរបស់ថ្មី',
-    'home.cta.gamingDeals': 'ប្រូម៉ូសិនហ្គេម',
+    'home.cta.shopNew': 'ទិញសម្រកថ្មី',
+    'home.cta.serumDeals': 'រសយារស្កូរ',
 
-    'home.hero.pills.shipping': 'ដឹកជញ្ជូនឥតគិតថ្លៃលើការបញ្ជាទិញលើ $199',
+    'home.hero.pills.shipping': 'ដឹកជញ្ជូនឥតគិតថ្លៃលើការបញ្ជាទិញលើ $50',
     'home.hero.pills.returns': 'សងប្រាក់វិញក្នុងរយៈពេល 30 ថ្ងៃ',
-    'home.hero.pills.warranty': 'ធានាផ្លូវការរបស់រោងចក្រ',
+    'home.hero.pills.warranty': 'ធានាកម្លាំងការថែទាំស្បែក',
 
-    'home.hero.desc': 'យើងផ្តល់ជូននូវផលិតផលដែលមានគុណភាពខ្ពស់ និងការធានាផ្លូវការ។',
+    'home.hero.desc': 'យើងផ្តល់ជូននូវស្កូរដែលមានគុណភាពខ្ពស់ និងការធានាផលិតផលស្កូរ។',
 
     'nav.home': 'ទំព័រដើម',
     'nav.products': 'ផលិតផល',
@@ -52,9 +52,8 @@ export const dictionaries: Record<Lang, Record<string, string>> = {
     'actions.viewOrders': 'មើលការបញ្ជាទិញ',
 
     'products.head.title': 'ទិញគ្រប់យ៉ាង',
-    'products.head.subtitle': 'ផលិតផល {{count}} មុខ · អ្វីថ្មីចុងក្រោយក្នុងបច្ចេកវិទ្យា និងអេឡិចត្រូនិក',
-
-    'products.search.placeholder': 'ស្វែងរកផលិតផល ម៉ាក…',
+    'products.head.subtitle': 'ផលិតផល {{count}} មុខ · អ្វីថ្មី​ចុងក្រោយក្នុងស្កូរ និងការថែទាំស',
+    'products.search.placeholder': 'ស្វែងរកស្កូរ ម៉ាក…',
     'products.filters.category': 'ប្រភេទ',
     'products.filters.country': 'ប្រទេស',
     'products.filters.priceMin': 'តម្លៃអប្បបរមា',
@@ -74,7 +73,7 @@ export const dictionaries: Record<Lang, Record<string, string>> = {
 
     'products.clear': 'លុបតម្រង',
     'products.promo.help': 'ត្រូវការជំនួយក្នុងការជ្រើសរើស?',
-    'products.promo.desc': 'និយាយជាមួយអ្នកជំនាញបច្ចេកវិទ្យារបស់យើង 24/7',
+    'products.promo.desc': 'និយាយជាមួយអ្នកជំនាញស្កូររបស់យើង 24/7',
 
     'products.empty.title': 'រកមិនឃើញផលិតផល',
     'products.empty.desc': 'សាកល្បងស្វែងរក ឬជ្រើសប្រភេទផ្សេង',
@@ -90,7 +89,7 @@ export const dictionaries: Record<Lang, Record<string, string>> = {
     'wishlist.head.title': 'បញ្ជីប្រាថ្នារបស់អ្នក',
     'wishlist.head.subtitle': '{{count}} បានរក្សាទុក',
     'wishlist.empty.title': 'មិនទាន់មានអ្វីដែលបានរក្សាទុកទេ',
-    'wishlist.empty.desc': 'ចុចលើរូបបេះដូងនៅលើផលិតផល ដើម្បីរក្សាទុកសម្រាប់ពេលក្រោយ',
+    'wishlist.empty.desc': 'ចុចលើរូបបេះដូមនៅលើផលិតផល ដើម្បីរក្សាទុកសម្រាប់ពេលក្រោយ',
     'wishlist.empty.cta': 'ស្វែងរកផលិតផល',
     'wishlist.addToCart': 'ដាក់ចូលកន្ត្រកទិញ',
 
@@ -117,7 +116,7 @@ export const dictionaries: Record<Lang, Record<string, string>> = {
     'checkout.payment.paypal.title': 'PayPal',
     'checkout.payment.paypal.desc': 'ទូទាត់ដោយសុវត្ថិភាពជាមួយ PayPal',
     'checkout.payment.cod.title': 'ដឹកជញ្ជូនយកប្រាក់',
-    'checkout.payment.cod.desc': 'បង់ប្រាក់ពេលដែលអ្នកទទួលបានការបញ្ជាទិញ',
+    'checkout.payment.cod.desc': 'បង់ប្រាក់ពេលអ្នកទទួលបានការបញ្ជាទិញ',
 
     'checkout.summary.title': 'សេចក្តីសង្ខេបការបញ្ជាទិញ',
     'checkout.summary.subtotal': 'ចំណែករង',
@@ -163,17 +162,17 @@ export const dictionaries: Record<Lang, Record<string, string>> = {
     'profile.card.password.desc': 'ជ្រើសរើសលេខសម្ងាត់ដែលរឹងមាំ ដែលអ្នកមិនប្រើនៅកន្លែងផ្សេង។',
 
     'profile.card.preferences.title': 'ចំណូលចិត្ត',
-    'profile.card.preferences.desc': 'កំណត់របៀបដែល ShopMart ទាក់ទងជាមួយអ្នក។',
+    'profile.card.preferences.desc': 'កំណត់របៀបដែល SkinCare Haven ទាក់ទងជាមួយអ្នក។',
 
     'profile.pref.newsletter.title': 'ព្រឹត្តិប័ត្រព័ត៌មាន (Email)',
-    'profile.pref.newsletter.desc': 'ព័ត៌មានថ្មីៗ ការបញ្ចុះតម្លៃ និងជម្រើសប្រចាំសប្ដាហ៍។',
+    'profile.pref.newsletter.desc': 'ព័ត៌មានស្កូរថ្មី ការបញ្ចុះតម្លៃ និងជម្រើសប្រចាំសប្ដាហ៍។',
     'profile.pref.sms.title': 'ការអាប់ដេតតាម SMS',
     'profile.pref.sms.desc': 'ព័ត៌មានស្ថានភាពការបញ្ជាទិញតាមសារខ្លី។',
 
     'profile.theme.title': 'រូបរាង',
 
     'auth.login.welcome': 'សូមស្វាគមន៍មកវិញ',
-    'auth.login.subtitle': 'ចូលដើម្បីបន្តការទិញរបស់អ្នក។',
+    'auth.login.subtitle': 'ចូលដើម្បីបន្តការទិញស្កូររបស់អ្នក។',
     'auth.login.email': 'អ៊ីមែល',
     'auth.login.password': 'លេខសម្ងាត់',
     'auth.login.rememberMe': 'ចាំខ្ញុំ',
@@ -182,7 +181,7 @@ export const dictionaries: Record<Lang, Record<string, string>> = {
     'auth.login.createAccount': 'បង្កើតគណនី',
 
     'auth.register.title': 'បង្កើតគណនីរបស់អ្នក',
-    'auth.register.subtitle': 'ចូលរួម ShopMart ក្នុងរយៈពេលប៉ុន្មានវិនាទី។',
+    'auth.register.subtitle': 'ចូលរួម SkinCare Haven ក្នុងរយៈពេលប៉ុន្មានវិនាទី។',
     'auth.register.name': 'ឈ្មោះពេញ',
     'auth.register.confirmPassword': 'បញ្ជាក់លេខសម្ងាត់',
     'auth.register.terms': 'ខ្ញុំយល់ព្រមតាម',
@@ -198,8 +197,20 @@ export const dictionaries: Record<Lang, Record<string, string>> = {
   } as const,
 
   en: {
-    'home.hero.title.line1': 'Your Style, Your Choice.',
-    'home.hero.title.line2': 'Shop Smarter, Live Better.',
+    'home.hero.kicker': 'SkinCare Haven',
+    'home.hero.title.line1': 'Skincare Essentials',
+    'home.hero.title.line2': 'For Healthy Glowing Skin',
+    'home.hero.title.line3': 'Delivered Fast',
+
+    'home.cta.shopNew': 'Shop New Arrivals',
+    'home.cta.serumDeals': 'Serum Deals',
+
+    'home.hero.pills.shipping': 'Free shipping on orders over $50',
+    'home.hero.pills.returns': '30-day money-back guarantee',
+    'home.hero.pills.warranty': 'Dermatologist-tested products',
+
+    'home.hero.desc': 'Discover premium skincare essentials with high-quality formulations for all skin types.',
+
     'nav.home': 'Home',
     'nav.products': 'Products',
 
@@ -235,6 +246,5 @@ export const dictionaries: Record<Lang, Record<string, string>> = {
     'actions.saved': 'Saved',
     'actions.placeOrder': 'Place order',
     'actions.viewOrders': 'View my orders',
-  },
+  }
 }
-

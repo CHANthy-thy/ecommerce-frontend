@@ -1,9 +1,13 @@
 ﻿<script setup lang="ts">
+import { computed } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { useRouter } from 'vue-router'
 
 const cart = useCartStore()
 const router = useRouter()
+
+const total = computed(() => cart.subtotal + (cart.items.length === 0 ? 0 : cart.subtotal >= 50 ? 0 : 9.99))
+const shipping = computed(() => (cart.items.length === 0 ? 0 : cart.subtotal >= 50 ? 0 : 9.99))
 
 function checkout() {
   if (cart.count === 0) return
@@ -27,7 +31,7 @@ function checkout() {
       <span class="micon">shopping_bag</span>
       <h2>Your cart is empty</h2>
       <p>Add a product to start your order.</p>
-      <RouterLink to="/products" class="btn primary">Browse products</RouterLink>
+          <RouterLink to="/products" class="btn primary">Browse skincare</RouterLink>
     </div>
 
     <div v-else class="layout">
@@ -63,22 +67,22 @@ function checkout() {
         </div>
         <div class="line-row">
           <span>Shipping</span>
-          <span>{{ cart.shipping === 0 ? 'Free' : `$${cart.shipping.toFixed(2)}` }}</span>
+          <span>{{ shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}` }}</span>
         </div>
         <div class="line-row total">
           <span>Total</span>
-          <span>${{ cart.total.toFixed(2) }}</span>
+          <span>${{ total.toFixed(2) }}</span>
         </div>
 
         <button class="btn primary lg" @click="checkout">
           Proceed to checkout <span class="micon">arrow_forward</span>
         </button>
 
-        <ul class="meta">
-          <li><span class="micon">local_shipping</span> Free shipping over $75</li>
-          <li><span class="micon">undo</span> 30-day returns</li>
-          <li><span class="micon">verified</span> Secure SSL checkout</li>
-        </ul>
+<ul class="meta">
+           <li><span class="micon">local_shipping</span> Free shipping over $50</li>
+           <li><span class="micon">undo</span> 30-day returns</li>
+           <li><span class="micon">verified_user</span> Dermatologist-tested</li>
+         </ul>
       </aside>
     </div>
   </div>
