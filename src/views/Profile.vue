@@ -1,5 +1,5 @@
 ﻿<script setup lang="ts">
-import { reactive, ref, computed } from 'vue'
+import { reactive, ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 
 const auth = useAuthStore()
@@ -7,11 +7,11 @@ const auth = useAuthStore()
 const tab = ref<'personal' | 'password' | 'preferences'>('personal')
 
 const profile = reactive({
-    name: auth.user?.name ?? 'SkinCare Haven',
-    email: auth.user?.email ?? 'skincare.customer@skincarehaven.com',
+    name: auth.user?.name ?? '',
+    email: auth.user?.email ?? '',
     phone: '+1 555 000 1234',
     address: '123 Beauty Boulevard, Los Angeles, CA 90001',
-  })
+})
 const profileErrors = reactive<Record<string, string>>({})
 const saving = ref(false)
 const saved = ref(false)
@@ -23,6 +23,14 @@ const pwdSaved = ref(false)
 
 const prefs = reactive({ newsletter: true, sms: false, theme: 'light' })
 
+onMounted(async () => {
+  if (auth.isAuthenticated && !auth.user) {
+    await auth.fetchProfile()
+  }
+  profile.name = auth.user?.name ?? ''
+  profile.email = auth.user?.email ?? ''
+})
+
 const stats = computed(() => [
   { label: 'Orders', value: 24, icon: 'package' },
   { label: 'Wishlist', value: 7, icon: 'favorite' },
@@ -30,33 +38,44 @@ const stats = computed(() => [
   { label: 'Points', value: 1240, icon: 'toll' },
 ])
 
-function saveProfile() {
+async function saveProfile() {
   for (const k of Object.keys(profileErrors)) delete profileErrors[k]
   if (!profile.name.trim() || profile.name.trim().length < 3) profileErrors.name = 'Name is too short'
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email)) profileErrors.email = 'Enter a valid email'
   if (Object.keys(profileErrors).length) return
   saving.value = true
-  setTimeout(() => {
-    if (auth.user) auth.user.name = profile.name
-    saving.value = false
+  try {
+    await auth.updateProfile({ name: profile.name, email: profile.email })
     saved.value = true
     setTimeout(() => (saved.value = false), 2200)
-  }, 600)
+  } catch (error: any) {
+    profileErrors.general = error.response?.data?.message || 'Failed to update profile'
+  } finally {
+    saving.value = false
+  }
 }
 
-function changePassword() {
+async function changePassword() {
   for (const k of Object.keys(passwordErrors)) delete passwordErrors[k]
   if (password.current.length < 6) passwordErrors.current = 'Enter your current password'
   if (password.next.length < 6) passwordErrors.next = 'Min 6 characters'
   if (password.next !== password.confirm) passwordErrors.confirm = 'Passwords do not match'
   if (Object.keys(passwordErrors).length) return
   pwdSaving.value = true
-  setTimeout(() => {
+  try {
+    await auth.changePassword({
+      current_password: password.current,
+      password: password.next,
+      password_confirmation: password.confirm,
+    })
     password.current = password.next = password.confirm = ''
-    pwdSaving.value = false
     pwdSaved.value = true
     setTimeout(() => (pwdSaved.value = false), 2200)
-  }, 700)
+  } catch (error: any) {
+    passwordErrors.general = error.response?.data?.message || 'Failed to change password'
+  } finally {
+    pwdSaving.value = false
+  }
 }
 </script>
 

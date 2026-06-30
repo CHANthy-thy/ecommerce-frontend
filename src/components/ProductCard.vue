@@ -2,42 +2,64 @@
 import { computed } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { useWishlistStore } from '@/stores/wishlist'
-import type { Product } from '@/data/products'
 
-const props = defineProps<{ product: Product }>()
+const props = defineProps<{ product: any }>()
+
+function getImageSource(product: any): string {
+  const imageUrl = product?.image_url
+  if (imageUrl && typeof imageUrl === 'string' && /^https?:\/\//i.test(imageUrl)) {
+    return imageUrl
+  }
+
+  const image = product?.image
+  if (image && typeof image === 'string') {
+    if (/^https?:\/\//i.test(image)) return image
+    return 'http://localhost:8000/storage/' + image.replace(/^\/+/, '')
+  }
+
+  return ''
+}
+
+
+function safeNumber(v: unknown): number {
+  const n = typeof v === 'number' ? v : Number(v)
+  return Number.isFinite(n) ? n : 0
+}
 
 const cart = useCartStore()
 const wishlist = useWishlistStore()
 
 const liked = computed(() => wishlist.has(props.product.id))
-const fullStars = computed(() => Math.floor(props.product.rating))
-const hasHalf = computed(() => props.product.rating - fullStars.value >= 0.5)
-const onSale = computed(() => !!props.product.oldPrice)
+const fullStars = computed(() => Math.floor(safeNumber(props.product.rating)))
+const hasHalf = computed(() => safeNumber(props.product.rating) - fullStars.value >= 0.5)
+const onSale = computed(() => safeNumber(props.product.oldPrice) > 0)
+
 const discount = computed(() => {
-  if (!props.product.oldPrice) return 0
-  return Math.round(((props.product.oldPrice - props.product.price) / props.product.oldPrice) * 100)
+  const oldPrice = safeNumber(props.product.oldPrice)
+  const price = safeNumber(props.product.price)
+  if (!oldPrice || !price) return 0
+  return Math.round(((oldPrice - price) / oldPrice) * 100)
 })
 
-function add() {
-  cart.add(
-    {
-      id: props.product.id,
-      name: props.product.name,
-      price: props.product.price,
-      image: props.product.image,
-    },
-    1,
-  )
+async function add() {
+  try {
+    await cart.add(props.product.id, 1)
+  } catch (error) {
+    console.error('Failed to add to cart', error)
+  }
 }
 
-function toggleWish() {
-  wishlist.toggle({
-    id: props.product.id,
-    name: props.product.name,
-    price: props.product.price,
-    image: props.product.image,
-    rating: props.product.rating,
-  })
+async function toggleWish() {
+  try {
+    if (liked.value) {
+      const item = wishlist.items.find(i => i.product_id === props.product.id)
+      if (item) await wishlist.remove(item.id)
+    } else {
+      await wishlist.add(props.product.id)
+    }
+  } catch (error) {
+    console.error('Failed to toggle wishlist', error)
+  }
 }
 </script>
 
@@ -45,7 +67,22 @@ function toggleWish() {
   <article class="card">
     <div class="media">
       <RouterLink :to="`/products/${product.id}`" class="media-link" aria-label="View product">
-        <img :src="product.image" :alt="product.name" loading="lazy" />
+        <img
+          v-if="product.image || product.image_url"
+          :src="getImageSource(product)"
+          :alt="product.name"
+          loading="lazy"
+          class="product-card-image"
+        />
+
+        <div
+          v-else
+          class="placeholder-image"
+          role="img"
+          aria-label="No product image available"
+        >
+          <div class="placeholder-text">No Image Available</div>
+        </div>
       </RouterLink>
 
       <div class="badges">
@@ -67,9 +104,7 @@ function toggleWish() {
 
     <div class="body">
       <div class="meta">
-        <span v-if="product.iCategory" class="chip outline cat">
-          {{ product.iCategory }}
-        </span>
+        <span v-if="product.iCategory" class="chip outline cat">{{ product.iCategory }}</span>
         <span v-if="product.country" class="chip outline country">
           <span class="flag">{{ product.flag ?? '' }}</span>
           {{ product.country }}
@@ -91,11 +126,9 @@ function toggleWish() {
         </span>
       </div>
 
-      <RouterLink :to="`/products/${product.id}`" class="name">
-        {{ product.name }}
-      </RouterLink>
+      <RouterLink :to="`/products/${product.id}`" class="name">{{ product.name }}</RouterLink>
 
-      <div v-if="product.brand" class="brand">{{ product.brand }}</div>
+      <div v-if="product.brand" class="brand">{{ product.brand?.name || product.brand }}</div>
 
       <div class="rating" aria-label="Rating">
         <span class="stars">
@@ -107,7 +140,7 @@ function toggleWish() {
             aria-hidden="true"
           >★</span>
         </span>
-        <span class="rate">{{ product.rating.toFixed(1) }}</span>
+        <span class="rate">{{ safeNumber(product.rating).toFixed(1) }}</span>
       </div>
 
       <div class="stock" :class="{ out: product.stock <= 0 }">
@@ -124,8 +157,8 @@ function toggleWish() {
 
       <div class="row">
         <div class="price">
-          <span class="now">${{ product.price.toFixed(2) }}</span>
-          <span v-if="onSale" class="old">${{ product.oldPrice!.toFixed(2) }}</span>
+          <span class="now">${{ safeNumber(product.price).toFixed(2) }}</span>
+          <span v-if="onSale" class="old">${{ safeNumber(product.oldPrice).toFixed(2) }}</span>
         </div>
 
         <div class="actions">
@@ -149,6 +182,7 @@ function toggleWish() {
     </div>
   </article>
 </template>
+
 
 
 <style scoped>
@@ -254,7 +288,6 @@ function toggleWish() {
   font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
 }
 
-
 .media {
   position: relative;
   aspect-ratio: 1 / 1;
@@ -272,11 +305,34 @@ function toggleWish() {
   object-fit: cover;
   transition: transform 500ms ease;
 }
+
+.product-card-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  max-height: 100%;
+}
 .card:hover .media img {
   transform: scale(1.06);
 }
 
+.product-card-placeholder {
+  width: 100%;
+  height: 200px;
+  display: grid;
+  place-items: center;
+  background: #f3f4f6;
+}
+
+.product-card-placeholder-img {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+  opacity: 0.7;
+}
+
 .badges {
+
   position: absolute;
   top: 10px;
   left: 10px;
@@ -326,7 +382,6 @@ function toggleWish() {
   background: rgba(236, 72, 153, 0.14);
   color: #ec4899;
 }
-
 
 .wish {
   position: absolute;
@@ -459,3 +514,4 @@ function toggleWish() {
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 </style>
+

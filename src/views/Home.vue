@@ -1,21 +1,54 @@
 ﻿<script setup lang="ts">
-import { computed } from 'vue'
-import { products, categories, brands } from '@/data/products'
+import { computed, onMounted, ref } from 'vue'
 import ProductCard from '@/components/ProductCard.vue'
 import { useI18n } from '@/composables/useI18n'
+import { productApi, categoryApi } from '@/api'
+
+type Category = { name: string }
 
 const { t } = useI18n()
 
-const featured = computed(() => products.filter((p) => p.isFeatured).slice(0, 8))
+const categories = ref<Category[]>([])
+const brands = ref<string[]>(['CeraVe', 'La Roche-Posay', 'COSRX', 'Beauty of Joseon', 'Anua', 'SKIN1004', 'Round Lab', 'Cetaphil', 'The Ordinary', 'Eucerin'])
+
+const products = ref<any[]>([])
+const loading = ref(false)
+
+const featured = computed(() => products.value.slice(0, 8))
+
 const productCounts = computed(() => {
   const counts: Record<string, number> = {}
-  products.forEach(p => {
-    if (p.iCategory) {
-      counts[p.iCategory] = (counts[p.iCategory] || 0) + 1
-    }
-  })
+  for (const p of products.value) {
+    const catName = p?.category?.name || p?.iCategory
+    if (catName) counts[catName] = (counts[catName] || 0) + 1
+  }
   return counts
 })
+
+async function load() {
+  loading.value = true
+  try {
+    const [catRes, prodRes] = await Promise.all([categoryApi.getAll(), productApi.getAll({ per_page: 50 })])
+
+    categories.value = (catRes.data.data || catRes.data) as Category[]
+    const allProducts = (prodRes.data.data || prodRes.data) as any[]
+
+    // Prefer “featured/latest” if backend supports it via a boolean; otherwise show latest page.
+    products.value = allProducts
+      .filter((p: any) => p?.isFeatured || p?.isBestSeller)
+      .slice(0, 8)
+
+    if (products.value.length === 0) {
+      products.value = allProducts.slice(0, 8)
+    }
+  } catch (e) {
+    console.error('Failed to load home data', e)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(load)
 </script>
 
 <template>
@@ -88,9 +121,7 @@ const productCounts = computed(() => {
           :to="`/products?cat=${cat.name}`"
           class="category-card"
         >
-          <div class="category-image">
-            <img :src="cat.cover" :alt="cat.name" />
-          </div>
+<div class="category-image" aria-hidden="true"></div>
           <div class="category-info">
             <h3>{{ cat.name }}</h3>
             <span class="product-count">{{ productCounts[cat.name] || 0 }} products</span>
@@ -326,6 +357,15 @@ const productCounts = computed(() => {
   aspect-ratio: 1 / 1;
   background: #F5EBDD;
   overflow: hidden;
+}
+.category-image::after {
+  content: '';
+  display: block;
+  width: 68%;
+  height: 68%;
+  margin: 16% auto 0;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(139, 198, 162, 0.35), rgba(106, 156, 137, 0.12));
 }
 
 .category-image img {

@@ -1,14 +1,15 @@
 ﻿<script setup lang="ts">
-import { reactive, ref, computed } from 'vue'
+import { reactive, ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCartStore } from '@/stores/cart'
-import { useAuthStore } from '@/stores/auth'
-import { useOrdersStore, type OrderStatus } from '@/stores/orders'
+import { checkoutApi } from '@/api'
 
 const cart = useCartStore()
 const router = useRouter()
-const auth = useAuthStore()
-const ordersStore = useOrdersStore()
+
+onMounted(() => {
+  cart.fetch()
+})
 
 const form = reactive({ name: '', phone: '', address: '', city: '', zip: '', payment: 'card' })
 const errors = reactive<Record<string, string>>({})
@@ -30,36 +31,37 @@ function validate() {
   return Object.keys(errors).length === 0
 }
 
-function placeOrder() {
+async function placeOrder() {
   if (cart.count === 0) return
   if (!validate()) return
 
   placing.value = true
-  setTimeout(() => {
-    orderId.value = 'SC-' + Math.floor(100000 + Math.random() * 900000).toString()
+  errors.general = ''
+  try {
+    const response = await checkoutApi.create({
+      shipping_address: `${form.name}, ${form.phone}, ${form.address}, ${form.city} ${form.zip}`,
+      payment_method: form.payment,
+    })
 
-    const status: OrderStatus = 'Processing'
-    const ownerKey = auth.user?.email ?? 'guest@local'
-
-    ordersStore.addOrder({
-        id: orderId.value,
-        date: new Date().toISOString(),
-        status,
-        total: total.value,
-        items: cart.items.map((it) => ({
-          name: it.name,
-          qty: it.quantity,
-          price: it.price,
-          image: it.image,
-        })),
-        ownerKey,
-      })
-
-
+    // Handle different response structures
+    const orderData = response.data?.data || response.data
+    orderId.value = orderData?.order_number || orderData?.order?.id || 'Unknown'
     placed.value = true
-    cart.clear()
+    
+    // Clear cart after successful order
+    await cart.clear()
+  } catch (error: any) {
+    console.error('Checkout error:', error)
+    if (error.response?.status === 401) {
+      errors.general = 'Please login to place an order'
+    } else if (error.response?.status === 422) {
+      errors.general = error.response.data?.message || 'Invalid order data'
+    } else {
+      errors.general = error.response?.data?.message || error.message || 'Failed to place order. Please try again.'
+    }
+  } finally {
     placing.value = false
-  }, 700)
+  }
 }
 
 
@@ -100,6 +102,11 @@ function goShop() {
 
     <div v-else class="layout">
       <section class="form">
+        <div v-if="errors.general" class="error-banner">
+          <span class="micon">error</span>
+          {{ errors.general }}
+        </div>
+
         <h3>Shipping details</h3>
         <div class="grid2">
           <label class="field" :class="{ invalid: errors.name }">
@@ -169,18 +176,18 @@ function goShop() {
               <strong>{{ item.name }}</strong>
               <span>Qty {{ item.quantity }}</span>
             </div>
-            <span class="price">${{ (item.price * item.quantity).toFixed(2) }}</span>
+            <span class="price">${{ (Number(item.price) * item.quantity).toFixed(2) }}</span>
           </li>
         </ul>
 
-        <div class="line-row"><span>Subtotal</span><span>${{ cart.subtotal.toFixed(2) }}</span></div>
+        <div class="line-row"><span>Subtotal</span><span>${{ Number(cart.subtotal).toFixed(2) }}</span></div>
         <div class="line-row">
           <span>Shipping</span>
-          <span>{{ shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}` }}</span>
+          <span>{{ shipping === 0 ? 'Free' : `$${Number(shipping).toFixed(2)}` }}</span>
         </div>
         <div class="line-row total">
           <span>Total</span>
-          <span>${{ total.toFixed(2) }}</span>
+          <span>${{ Number(total).toFixed(2) }}</span>
         </div>
 
         <button class="btn primary lg" :disabled="placing" @click="placeOrder">
@@ -298,6 +305,23 @@ function goShop() {
 }
 .form h3:not(:first-child) {
   margin-top: 24px;
+}
+
+.error-banner {
+  background: var(--danger-soft);
+  border: 1px solid var(--danger-border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--danger);
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+.error-banner .micon {
+  font-family: 'Material Symbols Rounded', 'Material Icons';
+  font-size: 20px;
 }
 
 .grid2 {

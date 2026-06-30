@@ -1,8 +1,8 @@
 ﻿<script setup lang="ts">
 import { ref, computed } from 'vue'
-import { products, categories } from '@/data/products'
 import { useRoute } from 'vue-router'
 import ProductCard from '@/components/ProductCard.vue'
+import { productApi, categoryApi } from '@/api'
 import { useI18n } from '@/composables/useI18n'
 
 const route = useRoute()
@@ -13,17 +13,46 @@ const cat = computed(() => (route.query.cat as string | undefined) ?? '')
 const country = computed(() => (route.query.country as string | undefined) ?? '')
 const sort = ref<'default' | 'price-asc' | 'price-desc' | 'rating'>('default')
 
+const products = ref<any[]>([])
+const categories = ref<{ name: string }[]>([])
+const loading = ref(false)
+
+const loadProducts = async () => {
+  loading.value = true
+  try {
+    const response = await productApi.getAll({ per_page: 50 })
+    // Handle Laravel pagination response
+    products.value = response.data.data || response.data
+  } catch (error) {
+    console.error('Failed to load products', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+const loadCategories = async () => {
+  try {
+    const response = await categoryApi.getAll()
+    categories.value = response.data.data
+  } catch (error) {
+    console.error('Failed to load categories', error)
+  }
+}
+
+loadProducts()
+loadCategories()
+
 const filtered = computed(() => {
-  let list = products.slice()
+  let list = products.value.slice()
   if (q.value.trim()) {
     const term = q.value.trim().toLowerCase()
-    list = list.filter((p) => p.name.toLowerCase().includes(term) || p.brand.toLowerCase().includes(term))
+    list = list.filter((p: any) => (p.name || '').toLowerCase().includes(term) || (p.brand || '').toLowerCase().includes(term))
   }
-  if (cat.value) list = list.filter((p) => p.category === cat.value)
-  if (country.value) list = list.filter((p) => p.country === country.value)
-  if (sort.value === 'price-asc') list = list.slice().sort((a, b) => a.price - b.price)
-  if (sort.value === 'price-desc') list = list.slice().sort((a, b) => b.price - a.price)
-  if (sort.value === 'rating') list = list.slice().sort((a, b) => b.rating - a.rating)
+  if (cat.value) list = list.filter((p: any) => p.category?.name === cat.value)
+  if (country.value) list = list.filter((p: any) => p.country === country.value)
+  if (sort.value === 'price-asc') list = list.slice().sort((a: any, b: any) => a.price - b.price)
+  if (sort.value === 'price-desc') list = list.slice().sort((a: any, b: any) => b.price - a.price)
+  if (sort.value === 'rating') list = list.slice().sort((a: any, b: any) => (b.rating || 0) - (a.rating || 0))
   return list
 })
 </script>
@@ -45,16 +74,6 @@ const filtered = computed(() => {
             <li><RouterLink to="/products">{{ t('products.filters.option.all') }}</RouterLink></li>
             <li v-for="c in categories" :key="c.name"><RouterLink :to="`/products?cat=${c.name}`">{{ c.name }}</RouterLink></li>
           </ul>
-        </div>
-
-        <div class="panel">
-          <h3>{{ t('products.filters.sort') }}</h3>
-          <select v-model="sort">
-            <option value="default">{{ t('products.filters.option.all') }}</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-            <option value="rating">Top Rated</option>
-          </select>
         </div>
       </aside>
 

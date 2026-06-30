@@ -16,9 +16,9 @@ const router = createRouter({
         { path: '', name: 'home', component: () => import('@/views/Home.vue') },
         { path: 'products', name: 'products', component: () => import('@/views/Products.vue') },
         { path: 'products/:id', name: 'product-detail', component: () => import('@/views/ProductDetail.vue') },
-        { path: 'wishlist', name: 'wishlist', component: () => import('@/views/Wishlist.vue') },
-        { path: 'cart', name: 'cart', component: () => import('@/views/Cart.vue') },
-        { path: 'checkout', name: 'checkout', component: () => import('@/views/Checkout.vue') },
+        { path: 'wishlist', name: 'wishlist', component: () => import('@/views/Wishlist.vue'), meta: { requiresAuth: true, requiresRole: 'customer' satisfies Role } },
+        { path: 'cart', name: 'cart', component: () => import('@/views/Cart.vue'), meta: { requiresAuth: true, requiresRole: 'customer' satisfies Role } },
+        { path: 'checkout', name: 'checkout', component: () => import('@/views/Checkout.vue'), meta: { requiresAuth: true, requiresRole: 'customer' satisfies Role } },
         {
           path: 'orders',
           name: 'orders',
@@ -33,6 +33,7 @@ const router = createRouter({
         },
         { path: 'login', name: 'login', component: () => import('@/views/Login.vue') },
         { path: 'register', name: 'register', component: () => import('@/views/Register.vue') },
+        { path: 'ping', name: 'ping-test', component: () => import('@/views/PingTest.vue') },
       ],
     },
 
@@ -47,11 +48,9 @@ const router = createRouter({
           name: 'admin-categories',
           component: () => import('@/views/admin/AdminCategories.vue'),
         },
-        // Keep these routes available so AdminLayout links don't 404.
-        // If/when the real pages are implemented, we can swap these for the final components.
-        { path: 'products', name: 'admin-products', component: () => import('@/views/admin/AdminDashboard.vue') },
-        { path: 'orders', name: 'admin-orders', component: () => import('@/views/admin/AdminDashboard.vue') },
-        { path: 'users', name: 'admin-users', component: () => import('@/views/admin/AdminDashboard.vue') },
+        { path: 'products', name: 'admin-products', component: () => import('@/views/admin/AdminProducts.vue') },
+        { path: 'orders', name: 'admin-orders', component: () => import('@/views/admin/AdminOrders.vue') },
+        { path: 'users', name: 'admin-users', component: () => import('@/views/admin/AdminUsers.vue') },
         { path: 'settings', name: 'admin-settings', component: () => import('@/views/admin/AdminDashboard.vue') },
         { path: 'audit', name: 'admin-audit', component: () => import('@/views/admin/AdminDashboard.vue') },
         { path: 'reports', name: 'admin-reports', component: () => import('@/views/admin/AdminDashboard.vue') },

@@ -8,7 +8,7 @@ const router = useRouter()
 
 const form = reactive({ email: '', password: '' })
 const show = reactive({ password: false })
-const errors = reactive<{ email?: string; password?: string }>({})
+const errors = reactive<{ email?: string; password?: string; general?: string }>({})
 const submitting = ref(false)
 
 function validate() {
@@ -21,14 +21,19 @@ function validate() {
   return !errors.email && !errors.password
 }
 
-function submit() {
+async function submit() {
   if (!validate()) return
   submitting.value = true
-  setTimeout(() => {
-    auth.login(form.email, form.password)
-    submitting.value = false
+  errors.general = ''
+
+  try {
+    await auth.login(form.email, form.password)
     router.push('/')
-  }, 500)
+  } catch (error: any) {
+    errors.general = error.response?.data?.message || 'Login failed. Please try again.'
+  } finally {
+    submitting.value = false
+  }
 }
 </script>
 
@@ -67,6 +72,8 @@ function submit() {
           </div>
           <small v-if="errors.password">{{ errors.password }}</small>
         </label>
+
+        <small v-if="errors.general" class="general-error">{{ errors.general }}</small>
 
         <div class="row">
           <label class="check">
@@ -182,7 +189,7 @@ function submit() {
   border-color: var(--danger);
   box-shadow: 0 0 0 4px var(--danger-soft);
 }
-.field small {
+.field small, .general-error {
   display: block;
   color: var(--danger);
   font-size: 12.5px;

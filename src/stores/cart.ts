@@ -1,108 +1,99 @@
 ﻿import { defineStore } from 'pinia'
+import { cartApi } from '@/api'
 
 export interface CartItem {
   id: number
+  product_id: number
   name: string
   price: number
   image: string
   quantity: number
 }
 
-const STORAGE_KEY = 'sm_cart_v1'
-
-function safeParseCartItems(json: string | null): CartItem[] | null {
-  if (!json) return null
-  try {
-    const data = JSON.parse(json) as unknown
-    if (!Array.isArray(data)) return null
-
-    const items: CartItem[] = []
-    for (const x of data as unknown[]) {
-      if (!x || typeof x !== 'object') return null
-      const i = x as Partial<CartItem>
-      if (
-        typeof i.id !== 'number' ||
-        typeof i.name !== 'string' ||
-        typeof i.price !== 'number' ||
-        typeof i.image !== 'string' ||
-        typeof i.quantity !== 'number'
-      ) {
-        return null
-      }
-      items.push({
-        id: i.id,
-        name: i.name,
-        price: i.price,
-        image: i.image,
-        quantity: i.quantity,
-      })
-    }
-
-    return items
-  } catch {
-    return null
-  }
-}
-
-const seededCart: CartItem[] = [
-  {
-    id: 1,
-    name: 'CeraVe Foaming Cleanser (Daily Refresh)',
-    price: 14.99,
-    image: 'https://images.unsplash.com/photo-1615390782511-7f4d0f8d3b2a?w=600&q=80&auto=format&fit=crop',
-    quantity: 1,
-  },
-  {
-    id: 2,
-    name: 'La Roche-Posay Hydrating Toner',
-    price: 19.5,
-    image: 'https://images.unsplash.com/photo-1585232351009-eebafc5b2d0f?w=600&q=80&auto=format&fit=crop',
-    quantity: 2,
-  },
-]
-
 export const useCartStore = defineStore('cart', {
-  state: () => {
-    const stored = safeParseCartItems(localStorage.getItem(STORAGE_KEY))
-
-    return {
-      items: stored ?? seededCart,
-    }
-  },
+  state: () => ({
+    items: [] as CartItem[],
+    loading: false,
+  }),
   getters: {
     count: (s) => s.items.reduce((a, i) => a + i.quantity, 0),
     subtotal: (s) => s.items.reduce((a, i) => a + i.price * i.quantity, 0),
+    total(state) {
+      const s = state as { items: CartItem[] }
+      return s.items.reduce((a, i) => a + i.price * i.quantity, 0)
+    },
   },
   actions: {
-    _persist() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.items))
-    },
-    add(item: Omit<CartItem, 'quantity'>, qty = 1) {
-      const existing = this.items.find((i) => i.id === item.id)
-      if (existing) {
-        existing.quantity += qty
-      } else {
-        this.items.push({ ...item, quantity: qty })
+    async fetch() {
+      this.loading = true
+      try {
+        const response = await cartApi.get()
+        const cartData = response.data.data
+        this.items = (cartData.items || []).map((item: any) => ({
+          id: item.id,
+          product_id: item.product_id,
+          name: item.product.name,
+          price: item.product.price,
+          image: item.product.image_url || item.product.image,
+          quantity: item.quantity,
+        }))
+      } catch (error) {
+        throw error
+      } finally {
+        this.loading = false
       }
-      this._persist()
     },
-    increment(id: number) {
-      const i = this.items.find((x) => x.id === id)
-      if (i) i.quantity++
-      this._persist()
+
+    async add(productId: number, quantity = 1) {
+      try {
+        const response = await cartApi.add({ product_id: productId, quantity })
+        const item = response.data.data as any
+        const product = item.product as any
+        const existing = this.items.find((i) => i.product_id === productId)
+        if (existing) {
+          existing.quantity += quantity
+        } else {
+          this.items.push({
+            id: item.id,
+            product_id: item.product_id,
+            name: product.name,
+            price: product.price,
+            image: product.image_url || product.image,
+            quantity: item.quantity,
+          })
+        }
+      } catch (error) {
+        throw error
+      }
     },
-    decrement(id: number) {
-      const i = this.items.find((x) => x.id === id)
-      if (i && i.quantity > 1) i.quantity--
-      this._persist()
+
+    async update(productId: number, quantity: number) {
+      try {
+        const response = await cartApi.update(productId, { quantity })
+        const updated = response.data.data as any
+        const item = this.items.find((i) => i.product_id === productId)
+        if (item) {
+          item.quantity = updated.quantity
+        }
+      } catch (error) {
+        throw error
+      }
     },
-    remove(id: number) {
-      this.items = this.items.filter((i) => i.id !== id)
-      this._persist()
+
+    async remove(productId: number) {
+      try {
+        await cartApi.remove(productId)
+        this.items = this.items.filter((i) => i.product_id !== productId)
+      } catch (error) {
+        throw error
+      }
     },
-    clear() {
-      this.items = []
-      this._persist()
+
+    async clear() {
+      // Remove all items one by one
+      for (const item of [...this.items]) {
+        await this.remove(item.product_id)
+      }
     },
   },
 })

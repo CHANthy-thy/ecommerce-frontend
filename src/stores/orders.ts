@@ -1,66 +1,70 @@
 import { defineStore } from 'pinia'
+import { orderApi } from '@/api'
 
 export type OrderStatus = 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled'
 
 export interface OrderItem {
+  id: number
+  product_id: number
   name: string
-  qty: number
   price: number
-  image: string
+
+  quantity: number
 }
 
 export interface Order {
-  id: string
+  id: number
+  order_number: string
   date: string
   status: OrderStatus
   total: number
   items: OrderItem[]
-  ownerKey: string
-}
-
-const STORAGE_KEY = 'sm_orders_v1'
-
-
-
-function safeParse(json: string | null): Order[] {
-  if (!json) return []
-  try {
-    const data = JSON.parse(json) as unknown
-    if (!Array.isArray(data)) return []
-    return data as Order[]
-  } catch {
-    return []
-  }
+  shipping_address: string
 }
 
 export const useOrdersStore = defineStore('orders', {
   state: () => ({
-    orders: safeParse(localStorage.getItem(STORAGE_KEY)) as Order[],
+    orders: [] as Order[],
+    loading: false,
   }),
   getters: {
-    listByOwnerKey: (s) => (ownerKey: string) => s.orders.filter((o) => o.ownerKey === ownerKey),
+    list: (s) => s.orders,
   },
-
   actions: {
-    _persist() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.orders))
-    },
-    addOrder(payload: { id: string; date: string; status: OrderStatus; total: number; items: OrderItem[]; ownerKey: string }) {
-      this.orders.unshift(payload)
-      this._persist()
+    async fetch() {
+      this.loading = true
+      try {
+        const response = await orderApi.getAll()
+        this.orders = response.data.data.map((order: any) => ({
+          id: order.id,
+          order_number: order.order_number,
+          date: order.created_at,
+          status: order.status as OrderStatus,
+          total: order.total,
+          items: order.items.map((item: any) => ({
+            id: item.id,
+            product_id: item.product_id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+
+          })),
+          shipping_address: order.shipping_address,
+        }))
+      } catch (error) {
+        throw error
+      } finally {
+        this.loading = false
+      }
     },
 
-
-    setOrders(orders: Order[]) {
-      this.orders = orders
-      this._persist()
-    },
-    updateStatus(id: string, status: OrderStatus) {
-      const o = this.orders.find((x) => x.id === id)
-      if (!o) return
-      o.status = status
-      this._persist()
+    async fetchById(id: number) {
+      try {
+        const response = await orderApi.getById(id)
+        return response.data.data as Order
+      } catch (error) {
+        throw error
+      }
     },
   },
 })
-

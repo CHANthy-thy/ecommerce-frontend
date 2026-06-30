@@ -1,10 +1,14 @@
 ﻿<script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { useRouter } from 'vue-router'
 
 const cart = useCartStore()
 const router = useRouter()
+
+onMounted(() => {
+  cart.fetch()
+})
 
 const total = computed(() => cart.subtotal + (cart.items.length === 0 ? 0 : cart.subtotal >= 50 ? 0 : 9.99))
 const shipping = computed(() => (cart.items.length === 0 ? 0 : cart.subtotal >= 50 ? 0 : 9.99))
@@ -36,27 +40,27 @@ function checkout() {
 
     <div v-else class="layout">
       <section class="items">
-        <div v-for="item in cart.items" :key="item.id" class="row-item">
-          <RouterLink :to="`/products/${item.id}`" class="thumb">
-            <img :src="item.image" :alt="item.name" />
-          </RouterLink>
-          <div class="info">
-            <RouterLink :to="`/products/${item.id}`" class="name">{{ item.name }}</RouterLink>
-            <span class="muted">In stock · Ships in 1–2 days</span>
-          </div>
-          <div class="qty">
-            <button @click="cart.decrement(item.id)" aria-label="Decrease">−</button>
-            <span>{{ item.quantity }}</span>
-            <button @click="cart.increment(item.id)" aria-label="Increase">+</button>
-          </div>
-          <div class="line">
-            ${{ (item.price * item.quantity).toFixed(2) }}
-            <span class="muted">${{ item.price.toFixed(2) }} each</span>
-          </div>
-          <button class="remove" @click="cart.remove(item.id)" aria-label="Remove">
-            <span class="micon">delete</span>
-          </button>
-        </div>
+<div v-for="item in cart.items" :key="item.id" class="row-item">
+           <RouterLink :to="`/products/${item.product_id}`" class="thumb">
+             <img :src="item.image" :alt="item.name" />
+           </RouterLink>
+           <div class="info">
+             <RouterLink :to="`/products/${item.product_id}`" class="name">{{ item.name }}</RouterLink>
+             <span class="muted">In stock · Ships in 1–2 days</span>
+           </div>
+           <div class="qty">
+             <button @click="cart.update(item.product_id, item.quantity - 1)" aria-label="Decrease">−</button>
+             <span>{{ item.quantity }}</span>
+             <button @click="cart.update(item.product_id, item.quantity + 1)" aria-label="Increase">+</button>
+           </div>
+           <div class="line">
+             ${{ (Number(item.price) * item.quantity).toFixed(2) }}
+             <span class="muted">${{ Number(item.price).toFixed(2) }} each</span>
+           </div>
+           <button class="remove" @click="cart.remove(item.product_id)" aria-label="Remove">
+             <span class="micon">delete</span>
+           </button>
+         </div>
       </section>
 
       <aside class="summary">

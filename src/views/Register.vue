@@ -20,16 +20,22 @@ function validate() {
   return Object.keys(errors).length === 0
 }
 
-function submit() {
+async function submit() {
   if (!validate()) return
   submitting.value = true
-  setTimeout(() => {
-    auth.register(form.name, form.email)
+
+  try {
+    await auth.register(form.name, form.email, form.password, form.confirm)
+    // Backend /register does not return access_token; user must login.
+    router.push('/login')
+  } catch (error: any) {
+    errors.general = error.response?.data?.message || 'Registration failed. Please try again.'
+    if (error.response?.data?.errors) {
+      Object.assign(errors, error.response.data.errors)
+    }
+  } finally {
     submitting.value = false
-    // Customer-only frontend: new accounts are always 'customer'
-    // Admin access remains restricted by router guard.
-    router.push('/')
-  }, 500)
+  }
 }
 </script>
 
@@ -62,7 +68,7 @@ function submit() {
         </label>
 
         <label class="field" :class="{ invalid: errors.password }">
-          <span>Password</span> 
+          <span>Password</span>
           <div class="input">
             <span class="micon">lock</span>
             <input v-model="form.password" type="password" placeholder="At least 6 characters" autocomplete="new-password" />
@@ -78,6 +84,8 @@ function submit() {
           </div>
           <small v-if="errors.confirm">{{ errors.confirm }}</small>
         </label>
+
+        <small v-if="errors.general" class="general-error">{{ errors.general }}</small>
 
         <label class="check">
           <input type="checkbox" required />
@@ -184,7 +192,7 @@ function submit() {
   border-color: var(--danger);
   box-shadow: 0 0 0 4px var(--danger-soft);
 }
-.field small {
+.field small, .general-error {
   display: block;
   color: var(--danger);
   font-size: 12.5px;

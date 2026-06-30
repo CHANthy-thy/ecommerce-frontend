@@ -1,12 +1,17 @@
 ﻿<script setup lang="ts">
 import { useWishlistStore } from '@/stores/wishlist'
 import { useCartStore } from '@/stores/cart'
+import { onMounted } from 'vue'
 
 const wishlist = useWishlistStore()
 const cart = useCartStore()
 
-function moveToCart(item: { id: number; name: string; price: number; image: string }) {
-  cart.add({ id: item.id, name: item.name, price: item.price, image: item.image }, 1)
+onMounted(() => {
+  wishlist.fetch()
+})
+
+function moveToCart(item: { id: number; product_id: number; name: string; price: number; image: string }) {
+  cart.add(item.product_id, 1)
   wishlist.remove(item.id)
 }
 </script>
@@ -30,31 +35,31 @@ function moveToCart(item: { id: number; name: string; price: number; image: stri
         <RouterLink to="/products" class="btn primary">Discover skincare</RouterLink>
     </div>
 
-    <div v-else class="grid">
-      <div v-for="item in wishlist.items" :key="item.id" class="card">
-        <div class="media">
-          <RouterLink :to="`/products/${item.id}`">
-            <img :src="item.image" :alt="item.name" />
-          </RouterLink>
-          <button class="remove" @click="wishlist.remove(item.id)" aria-label="Remove from wishlist">
-            <span class="micon">close</span>
-          </button>
-        </div>
-        <div class="body">
-          <RouterLink :to="`/products/${item.id}`" class="name">{{ item.name }}</RouterLink>
-          <div class="rating">
-            <span class="star">★</span>
-            <span class="rate">{{ item.rating.toFixed(1) }}</span>
-          </div>
-          <div class="row">
-            <span class="price">${{ item.price.toFixed(2) }}</span>
-            <button class="btn primary sm" @click="moveToCart(item)">
-              <span class="micon">shopping_cart</span> Add to cart
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+<div v-else class="grid">
+       <div v-for="item in wishlist.items" :key="item.id" class="card">
+         <div class="media">
+           <RouterLink :to="`/products/${item.product_id}`">
+             <img :src="item.image" :alt="item.name" />
+           </RouterLink>
+           <button class="remove" @click="wishlist.remove(item.id)" aria-label="Remove from wishlist">
+             <span class="micon">close</span>
+           </button>
+         </div>
+         <div class="body">
+           <RouterLink :to="`/products/${item.product_id}`" class="name">{{ item.name }}</RouterLink>
+           <div class="rating">
+             <span class="star">★</span>
+             <span class="rate">{{ Number(item.rating || 0).toFixed(1) }}</span>
+           </div>
+           <div class="row">
+             <span class="price">${{ Number(item.price).toFixed(2) }}</span>
+             <button class="btn primary sm" @click="moveToCart(item)">
+               <span class="micon">shopping_cart</span> Add to cart
+             </button>
+           </div>
+         </div>
+       </div>
+     </div>
   </div>
 </template>
 

@@ -1,23 +1,19 @@
 ﻿<script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useAuthStore } from '@/stores/auth'
+import { ref, computed, onMounted } from 'vue'
 import { useOrdersStore, type OrderStatus } from '@/stores/orders'
 
-const auth = useAuthStore()
 const ordersStore = useOrdersStore()
+
+onMounted(() => {
+  ordersStore.fetch()
+})
 
 const filter = ref<'All' | OrderStatus>('All')
 const open = ref<string | null>(null)
 
-const myOrders = computed(() => {
-  const ownerKey = auth.user?.email ?? 'guest@local'
-  return ordersStore.listByOwnerKey(ownerKey)
-})
-
-
 const list = computed(() => {
-  if (filter.value === 'All') return myOrders.value
-  return myOrders.value.filter((o) => o.status === filter.value)
+  if (filter.value === 'All') return ordersStore.list
+  return ordersStore.list.filter((o) => o.status === filter.value)
 })
 
 function toggle(id: string) {
@@ -52,40 +48,40 @@ function fmt(date: string) {
       <RouterLink to="/products" class="btn primary">Start shopping</RouterLink>
     </div>
 
-    <ul v-else class="orders">
-      <li v-for="o in list" :key="o.id" class="order" :class="{ open: open === o.id }">
-        <button class="row" @click="toggle(o.id)">
-          <div class="id">
-            <strong>{{ o.id }}</strong>
-            <span>{{ fmt(o.date) }}</span>
-          </div>
-          <span class="status" :class="o.status.toLowerCase()">{{ o.status }}</span>
-          <span class="total">${{ o.total.toFixed(2) }}</span>
-          <span class="items-count">{{ o.items.reduce((a, i) => a + i.qty, 0) }} item{{ o.items.length === 1 ? '' : 's' }}</span>
-          <span class="micon chev">expand_more</span>
-        </button>
+<ul v-else class="orders">
+       <li v-for="o in list" :key="o.id" class="order" :class="{ open: open === String(o.id) }">
+         <button class="row" @click="toggle(String(o.id))">
+           <div class="id">
+             <strong>{{ o.order_number }}</strong>
+             <span>{{ fmt(o.date) }}</span>
+           </div>
+           <span class="status" :class="o.status.toLowerCase()">{{ o.status }}</span>
+           <span class="total">${{ Number(o.total).toFixed(2) }}</span>
+           <span class="items-count">{{ o.items.reduce((a, i) => a + i.quantity, 0) }} item{{ o.items.length === 1 ? '' : 's' }}</span>
+           <span class="micon chev">expand_more</span>
+         </button>
 
-        <Transition name="slide">
-          <div v-if="open === o.id" class="details">
-            <div class="line"></div>
-            <ul class="items">
-              <li v-for="(it, i) in o.items" :key="i">
-                <img :src="it.image" :alt="it.name" />
-                <div>
-                  <strong>{{ it.name }}</strong>
-                  <span>Qty {{ it.qty }} · ${{ it.price.toFixed(2) }}</span>
-                </div>
-                <span class="line-price">${{ (it.price * it.qty).toFixed(2) }}</span>
-              </li>
-            </ul>
-            <div class="actions">
-              <button class="btn ghost">Reorder</button>
-              <button class="btn primary">View details</button>
-            </div>
-          </div>
-        </Transition>
-      </li>
-    </ul>
+         <Transition name="slide">
+           <div v-if="open === String(o.id)" class="details">
+             <div class="line"></div>
+             <ul class="items">
+               <li v-for="it in o.items" :key="it.id">
+                 <div class="item-thumb" aria-hidden="true"></div>
+                 <div>
+                   <strong>{{ it.name }}</strong>
+                   <span>Qty {{ it.quantity }} · ${{ Number(it.price).toFixed(2) }}</span>
+                 </div>
+                 <span class="line-price">${{ (Number(it.price) * it.quantity).toFixed(2) }}</span>
+               </li>
+             </ul>
+             <div class="actions">
+               <button class="btn ghost">Reorder</button>
+               <button class="btn primary">View details</button>
+             </div>
+           </div>
+         </Transition>
+       </li>
+     </ul>
   </div>
 </template>
 
@@ -288,6 +284,14 @@ function fmt(date: string) {
   border-radius: 10px;
   object-fit: cover;
   background: #f5f3ff;
+}
+
+.item-thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  background: #f5f3ff;
+  border: 1px dashed rgba(124, 58, 237, 0.25);
 }
 .items div {
   display: flex;
