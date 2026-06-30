@@ -93,7 +93,7 @@ onMounted(load)
         </div>
         <div class="hero-image-wrapper">
           <img
-            src="https://images.unsplash.com/photo-1556228578-4b2b3b7d6e7a?w=1000&q=80&auto=format&fit=crop"
+            src="https://skinney.com/cdn/shop/files/Skinney.com-skincare-banner.jpg?v=1711786394&width=3000"
             alt="Skincare products"
             class="hero-image"
           />
